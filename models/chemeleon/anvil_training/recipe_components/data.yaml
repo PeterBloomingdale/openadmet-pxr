@@ -1,0 +1,11 @@
+anvil_dir: file:///data1/choderaj/openadmet/skunkworks/202510_model_release/pxr/chemeleon/chemprop
+cat_entry: null
+dropna: false
+input_col: OPENADMET_SMILES
+resource: ChEMBL_EC50_PXR_CHEMBL3401_aggregated.parquet
+target_cols:
+- pchembl_value_mean
+test_resource: null
+train_resource: null
+type: intake
+val_resource: null

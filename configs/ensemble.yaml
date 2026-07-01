@@ -1,0 +1,49 @@
+strategy: blend_then_stack
+
+blend:
+  # Initial weights (will be optimized with optimize_blend_weights on OOF)
+  # SLSQP optimizer, non-negative weights summing to 1, MAE objective
+  lgbm_weight: 0.35
+  chemprop_weight: 0.40
+  mmp_delta_baseline_weight: 0.10
+  mmp_delta_siamese_weight: 0.15
+
+stack:
+  use_ridge: true
+  alphas: [1.0, 10.0, 100.0, 1000.0]  # High alpha preferred (correlated meta-features)
+  cv_folds: 5
+  # Non-negative ElasticNet meta-learner (optional; compares honest OOF vs Ridge vs blend)
+  use_elasticnet: true
+  elasticnet_l1_ratios: [0.1, 0.5, 0.9]
+  # NNLS: no regularization, non-negative weights — rank-18 teams report this wins on blind
+  use_nnls: true
+
+recal:
+  # Variance expansion target for dynamic_recal(). Training pEC50 std=1.121, but test
+  # compounds are analogs of 63 potent hits — narrower, higher-potency distribution.
+  # Using 1.121 causes ~46/513 clips (factor ~2.19×). Sub 15 used 0.70 (rank 47, MAE 0.4698).
+  # Sub 17 tried 0.90 (rank 60, MAE 0.476) — too aggressive, over-spread predictions hurt MAE.
+  # Reverting to 0.70 for Sub 18+: LB evidence shows test std ≈ 0.70, not 0.90.
+  target_std: 0.70
+
+  # Isotonic calibration: fit monotone f(OOF_blend) → y_true on 4135 training OOF predictions,
+  # then apply to test. Corrects systematic tail bias confirmed by scripts/37_residual_analysis.py:
+  #   Q1 (pEC50<3.64): +0.57 over-prediction   Q4 (pEC50>5.13): -0.47 under-prediction
+  # Applied AFTER variance recal so both spread and bias are addressed.
+  # Disabled by default — enable for probe submission to compare vs variance-only recal.
+  isotonic: false
+
+submission:
+  phase1_primary: blended_optimized    # Weighted blend with SLSQP-optimized weights
+  phase2_primary: calibrated_blend     # After linear residual calibration on Set 1
+
+# Submission cadence (based on ~1/day limit in Phase 1)
+submission_schedule:
+  - date: "2026-05-08"
+    description: "LightGBM-only baseline — validates pipeline + anchors leaderboard scale"
+  - date: "2026-05-15"
+    description: "LightGBM + Chemprop v2 ensemble — mid-strategy checkpoint"
+  - date: "2026-05-22"
+    description: "Full ensemble: LightGBM + Chemprop + MMP-delta (both models)"
+  - date: "2026-05-25"
+    description: "Final Phase 1: optimized blend weights"

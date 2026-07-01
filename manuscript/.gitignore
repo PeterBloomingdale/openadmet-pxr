@@ -1,0 +1,3 @@
+/.quarto/
+# Jupyter execution cache — regenerable build artifact, churns on every render
+.jupyter_cache/

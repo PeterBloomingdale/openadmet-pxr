@@ -1,0 +1,20 @@
+{
+  "variant_a_docking_only": {
+    "mae": 0.684890932776727,
+    "rae": 0.1153295748031413,
+    "r2": 0.284318629855956,
+    "spearman": 0.43151375871308234,
+    "dynamic_range": 5.93855421686747,
+    "rae_test": 0.8561136659709087,
+    "target_dynamic_range": 0.8
+  },
+  "variant_b_docking_classical": {
+    "mae": 0.49870902937119027,
+    "rae": 0.08397818916171393,
+    "r2": 0.600249314546538,
+    "spearman": 0.7437688973623426,
+    "dynamic_range": 5.93855421686747,
+    "rae_test": 0.6233862867139878,
+    "target_dynamic_range": 0.8
+  }
+}

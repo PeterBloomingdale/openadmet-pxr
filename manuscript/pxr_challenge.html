@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Peter Bloomingdale">
+<meta name="dcterms.date" content="2026-06-29">
+
+<title>Predicting Human PXR Agonism in Analog Series: A Multi-Model Ensemble Approach to the OpenADMET Blind Challenge</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="pxr_challenge_files/libs/clipboard/clipboard.min.js"></script>
+<script src="pxr_challenge_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="pxr_challenge_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="pxr_challenge_files/libs/quarto-html/popper.min.js"></script>
+<script src="pxr_challenge_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="pxr_challenge_files/libs/quarto-html/anchor.min.js"></script>
+<link href="pxr_challenge_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="pxr_challenge_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="pxr_challenge_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="pxr_challenge_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="pxr_challenge_files/libs/bootstrap/bootstrap-1a9011c99ff3470dca5095ea45ed0705.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#data-and-preprocessing" id="toc-data-and-preprocessing" class="nav-link" data-scroll-target="#data-and-preprocessing"><span class="header-section-number">2</span> Data and Preprocessing</a>
+  <ul class="collapse">
+  <li><a href="#data-sources" id="toc-data-sources" class="nav-link" data-scroll-target="#data-sources"><span class="header-section-number">2.1</span> Data Sources</a></li>
+  <li><a href="#data-curation" id="toc-data-curation" class="nav-link" data-scroll-target="#data-curation"><span class="header-section-number">2.2</span> Data Curation</a></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis"><span class="header-section-number">2.3</span> Exploratory Data Analysis</a></li>
+  </ul></li>
+  <li><a href="#cross-validation-strategy" id="toc-cross-validation-strategy" class="nav-link" data-scroll-target="#cross-validation-strategy"><span class="header-section-number">3</span> Cross-Validation Strategy</a></li>
+  <li><a href="#model-stack" id="toc-model-stack" class="nav-link" data-scroll-target="#model-stack"><span class="header-section-number">4</span> Model Stack</a>
+  <ul class="collapse">
+  <li><a href="#philosophy-diversity-over-quantity" id="toc-philosophy-diversity-over-quantity" class="nav-link" data-scroll-target="#philosophy-diversity-over-quantity"><span class="header-section-number">4.1</span> Philosophy: Diversity Over Quantity</a></li>
+  <li><a href="#model-summary" id="toc-model-summary" class="nav-link" data-scroll-target="#model-summary"><span class="header-section-number">4.2</span> Model Summary</a></li>
+  <li><a href="#key-model-descriptions" id="toc-key-model-descriptions" class="nav-link" data-scroll-target="#key-model-descriptions"><span class="header-section-number">4.3</span> Key Model Descriptions</a>
+  <ul class="collapse">
+  <li><a href="#lightgbm-on-tabular-features-lgbm" id="toc-lightgbm-on-tabular-features-lgbm" class="nav-link" data-scroll-target="#lightgbm-on-tabular-features-lgbm"><span class="header-section-number">4.3.1</span> LightGBM on Tabular Features (lgbm)</a></li>
+  <li><a href="#lightgbm-on-docking-features-lgbm_docking" id="toc-lightgbm-on-docking-features-lgbm_docking" class="nav-link" data-scroll-target="#lightgbm-on-docking-features-lgbm_docking"><span class="header-section-number">4.3.2</span> LightGBM on Docking Features (lgbm_docking)</a></li>
+  <li><a href="#tabpfn-in-context-learning" id="toc-tabpfn-in-context-learning" class="nav-link" data-scroll-target="#tabpfn-in-context-learning"><span class="header-section-number">4.3.3</span> TabPFN: In-Context Learning</a></li>
+  <li><a href="#unimol-v1-end-to-end-fine-tuning-unimol2-and-unimol2_s3" id="toc-unimol-v1-end-to-end-fine-tuning-unimol2-and-unimol2_s3" class="nav-link" data-scroll-target="#unimol-v1-end-to-end-fine-tuning-unimol2-and-unimol2_s3"><span class="header-section-number">4.3.4</span> UniMol v1 End-to-End Fine-Tuning (unimol2 and unimol2_s3)</a></li>
+  <li><a href="#tabicl-in-context-learning-at-scale" id="toc-tabicl-in-context-learning-at-scale" class="nav-link" data-scroll-target="#tabicl-in-context-learning-at-scale"><span class="header-section-number">4.3.5</span> TabICL: In-Context Learning at Scale</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#ensemble-strategy" id="toc-ensemble-strategy" class="nav-link" data-scroll-target="#ensemble-strategy"><span class="header-section-number">5</span> Ensemble Strategy</a>
+  <ul class="collapse">
+  <li><a href="#slsqp-simplex-optimization" id="toc-slsqp-simplex-optimization" class="nav-link" data-scroll-target="#slsqp-simplex-optimization"><span class="header-section-number">5.1</span> SLSQP Simplex Optimization</a></li>
+  <li><a href="#dynamic-variance-recalibration" id="toc-dynamic-variance-recalibration" class="nav-link" data-scroll-target="#dynamic-variance-recalibration"><span class="header-section-number">5.2</span> Dynamic Variance Recalibration</a></li>
+  <li><a href="#model-diversity" id="toc-model-diversity" class="nav-link" data-scroll-target="#model-diversity"><span class="header-section-number">5.3</span> Model Diversity</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">6</span> Results</a>
+  <ul class="collapse">
+  <li><a href="#phase-1-leaderboard-progression" id="toc-phase-1-leaderboard-progression" class="nav-link" data-scroll-target="#phase-1-leaderboard-progression"><span class="header-section-number">6.1</span> Phase 1 Leaderboard Progression</a></li>
+  <li><a href="#final-ensemble-composition" id="toc-final-ensemble-composition" class="nav-link" data-scroll-target="#final-ensemble-composition"><span class="header-section-number">6.2</span> Final Ensemble Composition</a></li>
+  <li><a href="#complete-submission-history" id="toc-complete-submission-history" class="nav-link" data-scroll-target="#complete-submission-history"><span class="header-section-number">6.3</span> Complete Submission History</a></li>
+  <li><a href="#phase-1-trajectory" id="toc-phase-1-trajectory" class="nav-link" data-scroll-target="#phase-1-trajectory"><span class="header-section-number">6.4</span> Phase 1 Trajectory</a></li>
+  <li><a href="#final-leaderboard-performance" id="toc-final-leaderboard-performance" class="nav-link" data-scroll-target="#final-leaderboard-performance"><span class="header-section-number">6.5</span> Final Leaderboard Performance</a></li>
+  <li><a href="#phase-2-final-submission" id="toc-phase-2-final-submission" class="nav-link" data-scroll-target="#phase-2-final-submission"><span class="header-section-number">6.6</span> Phase 2 Final Submission</a></li>
+  </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">7</span> Discussion</a>
+  <ul class="collapse">
+  <li><a href="#what-worked" id="toc-what-worked" class="nav-link" data-scroll-target="#what-worked"><span class="header-section-number">7.1</span> What Worked</a></li>
+  <li><a href="#what-did-not-work" id="toc-what-did-not-work" class="nav-link" data-scroll-target="#what-did-not-work"><span class="header-section-number">7.2</span> What Did Not Work</a></li>
+  <li><a href="#key-lessons-learned" id="toc-key-lessons-learned" class="nav-link" data-scroll-target="#key-lessons-learned"><span class="header-section-number">7.3</span> Key Lessons Learned</a></li>
+  <li><a href="#gap-to-top-team" id="toc-gap-to-top-team" class="nav-link" data-scroll-target="#gap-to-top-team"><span class="header-section-number">7.4</span> Gap to Top Team</a></li>
+  </ul></li>
+  <li><a href="#phase-2-responding-to-unblinded-data" id="toc-phase-2-responding-to-unblinded-data" class="nav-link" data-scroll-target="#phase-2-responding-to-unblinded-data"><span class="header-section-number">8</span> Phase 2: Responding to Unblinded Data</a>
+  <ul class="collapse">
+  <li><a href="#standing-at-the-halfway-mark" id="toc-standing-at-the-halfway-mark" class="nav-link" data-scroll-target="#standing-at-the-halfway-mark"><span class="header-section-number">8.1</span> Standing at the Halfway Mark</a></li>
+  <li><a href="#phase-2-strategy" id="toc-phase-2-strategy" class="nav-link" data-scroll-target="#phase-2-strategy"><span class="header-section-number">8.2</span> Phase 2 Strategy</a></li>
+  <li><a href="#new-data" id="toc-new-data" class="nav-link" data-scroll-target="#new-data"><span class="header-section-number">8.3</span> New Data</a>
+  <ul class="collapse">
+  <li><a href="#phase-2-training-data-summary" id="toc-phase-2-training-data-summary" class="nav-link" data-scroll-target="#phase-2-training-data-summary"><span class="header-section-number">8.3.1</span> Phase 2 Training Data Summary</a></li>
+  </ul></li>
+  <li><a href="#competitor-learnings" id="toc-competitor-learnings" class="nav-link" data-scroll-target="#competitor-learnings"><span class="header-section-number">8.4</span> Competitor Learnings</a>
+  <ul class="collapse">
+  <li><a href="#reactive-electrophile-exclusion-0.019-rae" id="toc-reactive-electrophile-exclusion-0.019-rae" class="nav-link" data-scroll-target="#reactive-electrophile-exclusion-0.019-rae"><span class="header-section-number">8.4.1</span> Reactive Electrophile Exclusion (+0.019 RAE)</a></li>
+  <li><a href="#chemeleon-initialized-chemprop-largest-single-gain" id="toc-chemeleon-initialized-chemprop-largest-single-gain" class="nav-link" data-scroll-target="#chemeleon-initialized-chemprop-largest-single-gain"><span class="header-section-number">8.4.2</span> CheMeleon-Initialized Chemprop (largest single gain)</a></li>
+  <li><a href="#task-multitask-training-0.070-rae-vs.-2-task" id="toc-task-multitask-training-0.070-rae-vs.-2-task" class="nav-link" data-scroll-target="#task-multitask-training-0.070-rae-vs.-2-task"><span class="header-section-number">8.4.3</span> 4-Task Multitask Training (+0.070 RAE vs.&nbsp;2-task)</a></li>
+  <li><a href="#external-data-hurts-tabular-models" id="toc-external-data-hurts-tabular-models" class="nav-link" data-scroll-target="#external-data-hurts-tabular-models"><span class="header-section-number">8.4.4</span> External Data Hurts Tabular Models</a></li>
+  </ul></li>
+  <li><a href="#technical-finding-feature-matrix-row-alignment" id="toc-technical-finding-feature-matrix-row-alignment" class="nav-link" data-scroll-target="#technical-finding-feature-matrix-row-alignment"><span class="header-section-number">8.5</span> Technical Finding: Feature Matrix Row Alignment</a></li>
+  <li><a href="#phase-2-model-stack" id="toc-phase-2-model-stack" class="nav-link" data-scroll-target="#phase-2-model-stack"><span class="header-section-number">8.6</span> Phase 2 Model Stack</a>
+  <ul class="collapse">
+  <li><a href="#new-models" id="toc-new-models" class="nav-link" data-scroll-target="#new-models"><span class="header-section-number">8.6.1</span> New Models</a></li>
+  <li><a href="#unimol-inference-augmentation" id="toc-unimol-inference-augmentation" class="nav-link" data-scroll-target="#unimol-inference-augmentation"><span class="header-section-number">8.6.2</span> UniMol Inference Augmentation</a></li>
+  </ul></li>
+  <li><a href="#confirmed-negative-results-from-competitors" id="toc-confirmed-negative-results-from-competitors" class="nav-link" data-scroll-target="#confirmed-negative-results-from-competitors"><span class="header-section-number">8.7</span> Confirmed Negative Results from Competitors</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">9</span> References</a></li>
+  <li><a href="#sec-appendix-subs" id="toc-sec-appendix-subs" class="nav-link" data-scroll-target="#sec-appendix-subs"><span class="header-section-number">10</span> Appendix A: Detailed Submission Analyses</a>
+  <ul class="collapse">
+  <li><a href="#submission-1-lightgbm-3.7-recal-first-leaderboard-result" id="toc-submission-1-lightgbm-3.7-recal-first-leaderboard-result" class="nav-link" data-scroll-target="#submission-1-lightgbm-3.7-recal-first-leaderboard-result"><span class="header-section-number">10.0.1</span> Submission 1: LightGBM (3.7× recal) — First leaderboard result</a></li>
+  <li><a href="#submission-2-mmp-delta-baseline" id="toc-submission-2-mmp-delta-baseline" class="nav-link" data-scroll-target="#submission-2-mmp-delta-baseline"><span class="header-section-number">10.0.2</span> Submission 2: MMP-delta Baseline</a></li>
+  <li><a href="#submission-3-lgbm-2.5-recal-calibration-test" id="toc-submission-3-lgbm-2.5-recal-calibration-test" class="nav-link" data-scroll-target="#submission-3-lgbm-2.5-recal-calibration-test"><span class="header-section-number">10.0.3</span> Submission 3: LGBM (2.5× recal) — Calibration test</a></li>
+  <li><a href="#submission-4-chemprop-mpnn-worst-result-mae0.859-rae1.078" id="toc-submission-4-chemprop-mpnn-worst-result-mae0.859-rae1.078" class="nav-link" data-scroll-target="#submission-4-chemprop-mpnn-worst-result-mae0.859-rae1.078"><span class="header-section-number">10.0.4</span> Submission 4: Chemprop MPNN (worst result — MAE=0.859, RAE=1.078)</a></li>
+  <li><a href="#submissions-78-ensemble-with-chemprop-mean-offset-error" id="toc-submissions-78-ensemble-with-chemprop-mean-offset-error" class="nav-link" data-scroll-target="#submissions-78-ensemble-with-chemprop-mean-offset-error"><span class="header-section-number">10.0.5</span> Submissions 7–8: Ensemble with Chemprop; mean-offset error</a></li>
+  <li><a href="#submission-9-full-training-data-biggest-single-improvement" id="toc-submission-9-full-training-data-biggest-single-improvement" class="nav-link" data-scroll-target="#submission-9-full-training-data-biggest-single-improvement"><span class="header-section-number">10.0.6</span> Submission 9: Full training data — biggest single improvement</a></li>
+  <li><a href="#submissions-1012-model-zoo-expansion" id="toc-submissions-1012-model-zoo-expansion" class="nav-link" data-scroll-target="#submissions-1012-model-zoo-expansion"><span class="header-section-number">10.0.7</span> Submissions 10–12: Model zoo expansion</a></li>
+  </ul></li>
+  <li><a href="#sec-appendix-models" id="toc-sec-appendix-models" class="nav-link" data-scroll-target="#sec-appendix-models"><span class="header-section-number">11</span> Appendix B: Supporting Models — Brief Reference</a></li>
+  <li><a href="#sec-appendix" id="toc-sec-appendix" class="nav-link" data-scroll-target="#sec-appendix"><span class="header-section-number">12</span> Appendix C: Running Decision Log</a>
+  <ul class="collapse">
+  <li><a href="#analog-expansion-cv-threshold-tanimoto-0.30" id="toc-analog-expansion-cv-threshold-tanimoto-0.30" class="nav-link" data-scroll-target="#analog-expansion-cv-threshold-tanimoto-0.30"><span class="header-section-number">12.0.1</span> 2026-05-04: Analog-Expansion CV threshold (Tanimoto 0.30)</a></li>
+  <li><a href="#inchikey-14-character-prefix-for-deduplication" id="toc-inchikey-14-character-prefix-for-deduplication" class="nav-link" data-scroll-target="#inchikey-14-character-prefix-for-deduplication"><span class="header-section-number">12.0.2</span> 2026-05-04: InChIKey 14-character prefix for deduplication</a></li>
+  <li><a href="#loss-function-for-chemprop-mae-over-huber" id="toc-loss-function-for-chemprop-mae-over-huber" class="nav-link" data-scroll-target="#loss-function-for-chemprop-mae-over-huber"><span class="header-section-number">12.0.3</span> 2026-05-04: Loss function for Chemprop — MAE over Huber</a></li>
+  <li><a href="#antisymmetric-siamese-constraint-for-mmp-delta-model" id="toc-antisymmetric-siamese-constraint-for-mmp-delta-model" class="nav-link" data-scroll-target="#antisymmetric-siamese-constraint-for-mmp-delta-model"><span class="header-section-number">12.0.4</span> 2026-05-04: Antisymmetric Siamese constraint for MMP-delta model</a></li>
+  <li><a href="#two-stage-chemprop-training-deferred-to-phase-2" id="toc-two-stage-chemprop-training-deferred-to-phase-2" class="nav-link" data-scroll-target="#two-stage-chemprop-training-deferred-to-phase-2"><span class="header-section-number">12.0.5</span> 2026-05-04: Two-stage Chemprop training deferred to Phase 2</a></li>
+  <li><a href="#stack-modernization-numpy2.0-constraint-removed" id="toc-stack-modernization-numpy2.0-constraint-removed" class="nav-link" data-scroll-target="#stack-modernization-numpy2.0-constraint-removed"><span class="header-section-number">12.0.6</span> 2026-05-04: Stack modernization — numpy&lt;2.0 constraint removed</a></li>
+  <li><a href="#eda-driven-architecture-revisions-counter-screen-and-chemprop-heads" id="toc-eda-driven-architecture-revisions-counter-screen-and-chemprop-heads" class="nav-link" data-scroll-target="#eda-driven-architecture-revisions-counter-screen-and-chemprop-heads"><span class="header-section-number">12.0.7</span> 2026-05-04: EDA-driven architecture revisions (counter-screen and Chemprop heads)</a></li>
+  <li><a href="#rdkit-api-compatibility-fix-removestereochemistry" id="toc-rdkit-api-compatibility-fix-removestereochemistry" class="nav-link" data-scroll-target="#rdkit-api-compatibility-fix-removestereochemistry"><span class="header-section-number">12.0.8</span> 2026-05-04: RDKit API compatibility fix — RemoveStereoChemistry</a></li>
+  <li><a href="#lightgbm-baseline-first-oof-rae-number" id="toc-lightgbm-baseline-first-oof-rae-number" class="nav-link" data-scroll-target="#lightgbm-baseline-first-oof-rae-number"><span class="header-section-number">12.0.9</span> 2026-05-04: LightGBM baseline — first OOF RAE number</a></li>
+  <li><a href="#variance-compression-diagnosis-and-model-refinement" id="toc-variance-compression-diagnosis-and-model-refinement" class="nav-link" data-scroll-target="#variance-compression-diagnosis-and-model-refinement"><span class="header-section-number">12.0.10</span> 2026-05-04: Variance compression diagnosis and model refinement</a></li>
+  <li><a href="#first-leaderboard-submission-rae0.958-reveals-distribution-shift" id="toc-first-leaderboard-submission-rae0.958-reveals-distribution-shift" class="nav-link" data-scroll-target="#first-leaderboard-submission-rae0.958-reveals-distribution-shift"><span class="header-section-number">12.0.11</span> 2026-05-04: First leaderboard submission — RAE=0.958 reveals distribution shift</a></li>
+  <li><a href="#mmp-delta-leaderboard-result-coverage-too-low" id="toc-mmp-delta-leaderboard-result-coverage-too-low" class="nav-link" data-scroll-target="#mmp-delta-leaderboard-result-coverage-too-low"><span class="header-section-number">12.0.12</span> 2026-05-05: MMP-delta leaderboard result — coverage too low</a></li>
+  <li><a href="#chemprop-v2-cli-crash-on-windows-rewritten-to-python-api" id="toc-chemprop-v2-cli-crash-on-windows-rewritten-to-python-api" class="nav-link" data-scroll-target="#chemprop-v2-cli-crash-on-windows-rewritten-to-python-api"><span class="header-section-number">12.0.13</span> 2026-05-06: Chemprop v2 CLI crash on Windows — rewritten to Python API</a></li>
+  <li><a href="#sub-78-leaderboard-results-root-cause-active-only-training-data" id="toc-sub-78-leaderboard-results-root-cause-active-only-training-data" class="nav-link" data-scroll-target="#sub-78-leaderboard-results-root-cause-active-only-training-data"><span class="header-section-number">12.0.14</span> 2026-05-06: Sub 7/8 leaderboard results — root cause: active-only training data</a></li>
+  <li><a href="#phase-1-corrective-fixes-traintest-parity-ensemble-recal-honest-stacker" id="toc-phase-1-corrective-fixes-traintest-parity-ensemble-recal-honest-stacker" class="nav-link" data-scroll-target="#phase-1-corrective-fixes-traintest-parity-ensemble-recal-honest-stacker"><span class="header-section-number">12.0.15</span> 2026-05-07: Phase 1 corrective fixes — train/test parity, ensemble recal, honest stacker</a></li>
+  <li><a href="#submission-discipline-pre-flight-gate-scripts" id="toc-submission-discipline-pre-flight-gate-scripts" class="nav-link" data-scroll-target="#submission-discipline-pre-flight-gate-scripts"><span class="header-section-number">12.0.16</span> 2026-05-09: Submission discipline — pre-flight gate scripts</a></li>
+  <li><a href="#chemprop-run-3-epoch-cap-resolves-mean-collapse" id="toc-chemprop-run-3-epoch-cap-resolves-mean-collapse" class="nav-link" data-scroll-target="#chemprop-run-3-epoch-cap-resolves-mean-collapse"><span class="header-section-number">12.0.17</span> 2026-05-13: Chemprop Run 3 — epoch cap resolves mean-collapse</a></li>
+  <li><a href="#unimol_tools-full-determinism-lr-change-as-diversity-mechanism" id="toc-unimol_tools-full-determinism-lr-change-as-diversity-mechanism" class="nav-link" data-scroll-target="#unimol_tools-full-determinism-lr-change-as-diversity-mechanism"><span class="header-section-number">12.0.18</span> 2026-05-22: unimol_tools full determinism — LR change as diversity mechanism</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../pxr_challenge.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Predicting Human PXR Agonism in Analog Series: A Multi-Model Ensemble Approach to the OpenADMET Blind Challenge</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Peter Bloomingdale </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 29, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>The pregnane X receptor (PXR, NR1I2) is the primary xenobiotic sensor of the human liver and small intestine. When a compound binds PXR’s ligand-binding domain (LBD), the receptor drives transcription of CYP3A4 — the enzyme responsible for clearing approximately 50% of all marketed drugs <span class="citation" data-cites="kliewer1998">(<a href="#ref-kliewer1998" role="doc-biblioref"><span class="nocase">Kliewer et al.</span> 1998</a>)</span>. This makes PXR activation a critical ADMET liability: a PXR agonist will accelerate the metabolism of co-administered drugs, potentially causing drug-drug interactions (DDIs), hepatotoxicity, or chemoresistance.</p>
+<p>PXR presents a unique challenge for computational prediction. Its LBD is exceptionally large and flexible (~1,150–1,600 Å³), accommodating ligands with vastly different sizes, shapes, and chemical frameworks <span class="citation" data-cites="watkins2001">(<a href="#ref-watkins2001" role="doc-biblioref">Watkins et al. 2001</a>)</span>. This promiscuity means that PXR models must capture broad structural diversity rather than fitting a narrow pharmacophore.</p>
+<p>The <strong>OpenADMET PXR Blind Challenge</strong> provides the largest publicly available PXR dataset: over 11,000 compounds screened by Octant, Inc.&nbsp;using a high-fidelity luciferase reporter assay, with 4,140 full 8-point dose-response curves. The <strong>Activity Prediction Track</strong> tasks participants with predicting pEC50 for 513 Enamine analogs of 63 potent training hits — a lead-optimization scenario in which test compounds are structurally related to known actives.</p>
+<p><strong>Primary evaluation metric:</strong> Relative Absolute Error (RAE) = MAE / dynamic_range, where dynamic_range is the pEC50 span of the test set. Lower RAE is better.</p>
+<p><strong>Final result:</strong> Phase 1 — Submission 20, rank 68, MAE = 0.4682, RAE = 0.5876, Spearman ρ = 0.8051. <strong>Phase 2</strong> then folded the unblinded Analog Set 1 (253/513) into training and retrained the ensemble (OOF MAE = 0.4829); post-hoc calibration on the real labels was tested and gave no out-of-sample gain. This document records the full methodology and the iterative reasoning behind each modeling decision; the Phase 2 final submission is detailed in §Results and reproduced by <code>submissions/phase2/REPRODUCE.md</code>.</p>
+</section>
+<section id="data-and-preprocessing" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Data and Preprocessing</h1>
+<section id="data-sources" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="data-sources"><span class="header-section-number">2.1</span> Data Sources</h2>
+<p><strong>Phase 1</strong> trained on the OpenADMET Octant dataset (n = 4,135 curated compounds, pEC50 1.61–7.55). <strong>Phase 2</strong> expanded the training set with newly-released labeled data.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>PubChem AID</th>
+<th>Compounds (curated)</th>
+<th>Use</th>
+<th>Source weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>OpenADMET (Octant)</td>
+<td>—</td>
+<td>4,031</td>
+<td>Primary regression</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<td>Analog Set 1 (unblinded, Phase 2)</td>
+<td>—</td>
+<td>253</td>
+<td>Primary regression</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td>HTChem crude (Phase 2)</td>
+<td>—</td>
+<td>454</td>
+<td>Primary regression</td>
+<td>0.8</td>
+</tr>
+<tr class="even">
+<td>HTChem semi-pure (Phase 2)</td>
+<td>—</td>
+<td>89</td>
+<td>Primary regression</td>
+<td>0.9</td>
+</tr>
+<tr class="odd">
+<td>Tox21 hPXR agonist qHTS</td>
+<td>AID 1347033</td>
+<td>6,533</td>
+<td>Chemprop backbone pretrain only</td>
+<td>0.8</td>
+</tr>
+<tr class="even">
+<td>NCATS hPXR-luc qHTS</td>
+<td>AID 720659</td>
+<td>127</td>
+<td>Chemprop backbone pretrain only</td>
+<td>0.6</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Excluded from tabular model training:</strong> All PubChem sources. Despite nominally compatible pEC50 scales, systematic assay differences degrade LightGBM, CatBoost, TabPFN, and TabICL predictions (see Phase 2 section). PubChem data is used exclusively for Chemprop backbone pretraining where structural diversity is beneficial.</p>
+<p><strong>Excluded entirely:</strong> Rodent PXR data (species-specific pocket geometry inverts SAR), CYP3A4 inhibition panels (different pharmacological endpoint), four mislabeled PubChem AIDs (1224894, 1224895, 1346798, 651632), ChEMBL/BindingDB (confirmed negative by multiple top teams).</p>
+<p><strong>Reactive electrophile exclusion (Phase 2):</strong> 387 of 4,827 primary-source compounds containing acrylamides, acrylates, or aldehydes were removed from training. The test set contains none of these warhead classes. Removal improved CV RAE by approximately 0.019 (discoverybytes benchmark).</p>
+<p>The Phase 2 primary training set after reactive electrophile exclusion and NaN filtering contains <strong>4,718 compounds</strong> with valid pEC50 measurements (range 1.61–7.62).</p>
+</section>
+<section id="data-curation" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="data-curation"><span class="header-section-number">2.2</span> Data Curation</h2>
+<p>All SMILES were standardized through a 6-step RDKit MolStandardize pipeline: (1) parse and sanitize, (2) remove explicit hydrogens, (3) disconnect metal-ligand bonds, (4) retain largest fragment, (5) neutralize, (6) generate canonical SMILES with <code>isomericSmiles=False</code> (strips stereo annotations — see EDA Q5 below).</p>
+<p>Compounds were deduplicated on the <strong>first 14 characters of the InChIKey</strong> (connectivity prefix only), which merges racemates and enantiomers that are indistinguishable in the cell-based assay. Replicates were aggregated by median (robust to curve-fitting outliers). Before any training, the 513 test compound InChIKey prefixes were removed from training and auxiliary data to prevent data leakage.</p>
+</section>
+<section id="exploratory-data-analysis" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="exploratory-data-analysis"><span class="header-section-number">2.3</span> Exploratory Data Analysis</h2>
+<p>Five diagnostic questions were answered before any modeling. Each finding directly drove an architecture decision:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Question</th>
+<th>Finding</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Q1: Noise floor</td>
+<td>pEC50 SE median = 0.300 log-units</td>
+<td>Theoretical RAE floor ≈ 0.050</td>
+</tr>
+<tr class="even">
+<td>Q2: Test-train similarity</td>
+<td>Only <strong>9.2%</strong> of test compounds have max Tanimoto &gt; 0.4</td>
+<td>MMP-delta coverage too low for primary model</td>
+</tr>
+<tr class="odd">
+<td>Q3: Censored fraction</td>
+<td><strong>67.7%</strong> below pEC50 5.0</td>
+<td>Must train on full dataset, not active-only subset</td>
+</tr>
+<tr class="even">
+<td>Q4: Primary vs.&nbsp;counter-screen r²</td>
+<td><strong>r² = 0.012</strong> (n = 2,647 paired compounds)</td>
+<td>Counter-screen excluded from Chemprop regression heads</td>
+</tr>
+<tr class="odd">
+<td>Q5: Stereo profile</td>
+<td>10.6% train / 4.3% test have defined stereo</td>
+<td>Strip stereochemistry for consistent train/test fingerprints</td>
+</tr>
+</tbody>
+</table>
+<p>The most consequential finding was <strong>Q3</strong>: the initial pipeline trained only on the 1,334 “active” compounds (pEC50 ≥ 5.0), discarding 67.7% of measured data. The test analogs span the full activity range, including weakly-active and inactive analogs. A model that has never seen pEC50 &lt; 5.0 during training cannot predict them at test time. Fixing this (Submission 9) produced the single largest improvement in Phase 1.</p>
+</section>
+</section>
+<section id="cross-validation-strategy" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Cross-Validation Strategy</h1>
+<p>Random CV is inappropriate for this challenge: test compounds are analogs of training hits, so random folds leak information through structural similarity, producing optimistic CV metrics. Scaffold CV is too pessimistic for the opposite reason.</p>
+<p>We use <strong>Butina (Taylor-Butina) clustering</strong> <span class="citation" data-cites="butina1999">(<a href="#ref-butina1999" role="doc-biblioref">Butina 1999</a>)</span> at ECFP4 Tanimoto threshold 0.30:</p>
+<ol type="1">
+<li>Compute pairwise ECFP4 Tanimoto distances for all training compounds</li>
+<li>Run Butina clustering (sphere-exclusion; each cluster centroid has all members within threshold distance)</li>
+<li>Assign clusters to folds using size-balanced greedy bin-packing</li>
+<li>For each fold: hold out the entire cluster; no validation compound has a Tanimoto neighbor &gt; 0.30 in training</li>
+</ol>
+<p><strong>Phase 1</strong> produced 617 clusters from 4,135 compounds (64% singletons, 827 compounds/fold). <strong>Phase 2</strong> with the expanded primary training set (4,827 compounds including Analog Set 1 and HTChem) produces 4,891 clusters across 11,487 total curated compounds; tabular model training uses the 4,718-compound primary-source active subset (4,827 primary minus 109 censored with NaN pEC50).</p>
+<p><strong>Why OOF Spearman ρ is much lower than leaderboard Spearman:</strong> Butina CV strictly holds out scaffold families. The final model (trained on all 4,135 compounds) has seen the 63 parent compounds plus their structural neighbors; the leaderboard tests on analogs of exactly those parents. CV pessimistically simulates the case where those parent scaffolds were entirely withheld during training. OOF Spearman ≈ 0.55–0.65 corresponds to LB Spearman ≈ 0.79–0.81.</p>
+</section>
+<section id="model-stack" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Model Stack</h1>
+<section id="philosophy-diversity-over-quantity" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="philosophy-diversity-over-quantity"><span class="header-section-number">4.1</span> Philosophy: Diversity Over Quantity</h2>
+<p>Adding a new model only improves the ensemble if it makes <em>different</em> errors from existing models. Models trained on similar features produce nearly identical predictions (Pearson r &gt; 0.99 between LGBM variants with different fingerprint types) and add no information. The selection criterion for each new model was: does it contribute predictions with Pearson r &lt; 0.95 to the current ensemble?</p>
+<p>The 17 models trained in Phase 1 span four fundamentally different molecular representations:</p>
+<ul>
+<li><strong>Tabular (2D features):</strong> LGBM and CatBoost on fingerprints + descriptors; TabPFN and TabICL using in-context learning</li>
+<li><strong>Graph neural networks:</strong> Chemprop MPNN (from-scratch and HTS-pretrained)</li>
+<li><strong>3D molecular shape:</strong> UniMol frozen embeddings → LGBM; UniMol end-to-end fine-tuning</li>
+<li><strong>Physics-based:</strong> Vina docking scores + 3D shape descriptors on the PXR crystal structure (PDB: 2QD9)</li>
+</ul>
+</section>
+<section id="model-summary" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="model-summary"><span class="header-section-number">4.2</span> Model Summary</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Type</th>
+<th>Key feature set</th>
+<th>OOF MAE</th>
+<th>Sub 20 blend weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>unimol2_s3</strong></td>
+<td>3D transformer (fine-tuned, LR=2×10⁻⁴)</td>
+<td>UniMol v1, end-to-end</td>
+<td>0.500</td>
+<td><strong>24.8%</strong></td>
+</tr>
+<tr class="even">
+<td><strong>lgbm_docking</strong></td>
+<td>Gradient boosting</td>
+<td>Vina docking (7 feat) + RDKit 3D shape (8 feat)</td>
+<td>0.499</td>
+<td><strong>23.5%</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>tabpfn</strong></td>
+<td>In-context learning</td>
+<td>CheMeleon (2048-d) + rdkit2d (208-d) → PCA-256</td>
+<td>0.500</td>
+<td><strong>20.0%</strong></td>
+</tr>
+<tr class="even">
+<td><strong>unimol2</strong></td>
+<td>3D transformer (fine-tuned, LR=5×10⁻⁵)</td>
+<td>UniMol v1, end-to-end</td>
+<td>0.513</td>
+<td><strong>10.8%</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>unimol2_s2</strong></td>
+<td>3D transformer (duplicate run)</td>
+<td>UniMol v1, identical to unimol2</td>
+<td>0.513</td>
+<td>10.8%†</td>
+</tr>
+<tr class="even">
+<td><strong>tabicl</strong></td>
+<td>In-context learning</td>
+<td>CheMeleon + ECFP4 + rdkit2d → PCA-256</td>
+<td>0.505</td>
+<td><strong>5.1%</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>tabicl_chemprop</strong></td>
+<td>In-context learning</td>
+<td>+ Chemprop-FT embeddings (300-d)</td>
+<td>0.505</td>
+<td>5.1%†</td>
+</tr>
+<tr class="even">
+<td>lgbm</td>
+<td>Gradient boosting</td>
+<td>Morgan + Avalon + ErG + rdkit2d + Mordred</td>
+<td>0.500</td>
+<td>0%</td>
+</tr>
+<tr class="odd">
+<td>lgbm_chemeleon</td>
+<td>Gradient boosting</td>
+<td>CheMeleon + fingerprints + Mordred</td>
+<td>0.500</td>
+<td>0%</td>
+</tr>
+<tr class="even">
+<td>lgbm_optimal</td>
+<td>Gradient boosting</td>
+<td>CheMeleon + ECFP4 + rdkit2d (no Mordred)</td>
+<td>0.501</td>
+<td>0%</td>
+</tr>
+<tr class="odd">
+<td>chemprop_hts</td>
+<td>MPNN (HTS-pretrained)</td>
+<td>Graph topology, 7,238 PXR HTS pretrain</td>
+<td>~0.52</td>
+<td>0%</td>
+</tr>
+<tr class="even">
+<td>chemprop</td>
+<td>MPNN (from scratch)</td>
+<td>Graph topology</td>
+<td>~0.56</td>
+<td>0%</td>
+</tr>
+<tr class="odd">
+<td>catboost</td>
+<td>Gradient boosting</td>
+<td>CheMeleon + ECFP4 + rdkit2d → PCA-256</td>
+<td>0.505</td>
+<td>0%</td>
+</tr>
+<tr class="even">
+<td>tabicl_3d</td>
+<td>In-context learning</td>
+<td>+ UniMol 3D embeddings</td>
+<td>0.518</td>
+<td>0%</td>
+</tr>
+<tr class="odd">
+<td>knn</td>
+<td>K-nearest neighbors</td>
+<td>ECFP4 Tanimoto</td>
+<td>0.695</td>
+<td>0%</td>
+</tr>
+<tr class="even">
+<td>unimol_lgbm</td>
+<td>Gradient boosting</td>
+<td>UniMol frozen embeddings (512-d)</td>
+<td>~0.55</td>
+<td>0%</td>
+</tr>
+<tr class="odd">
+<td>chemeleon_binary</td>
+<td>Classifier (calibrated)</td>
+<td>CheMeleon, binary activity threshold</td>
+<td>~0.58</td>
+<td>0%</td>
+</tr>
+</tbody>
+</table>
+<p>†unimol2_s2 received weight 10.8% only because the SLSQP optimizer splits weight equally between it and unimol2 (their predictions are bit-identical). tabicl_chemprop similarly mirrors tabicl exactly.</p>
+</section>
+<section id="key-model-descriptions" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="key-model-descriptions"><span class="header-section-number">4.3</span> Key Model Descriptions</h2>
+<section id="lightgbm-on-tabular-features-lgbm" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="lightgbm-on-tabular-features-lgbm"><span class="header-section-number">4.3.1</span> LightGBM on Tabular Features (lgbm)</h3>
+<p>LightGBM <span class="citation" data-cites="ke2017">(<a href="#ref-ke2017" role="doc-biblioref">Ke et al. 2017</a>)</span> trained on the concatenated fingerprint and descriptor matrix: Morgan count fingerprints (2048-d), Avalon (1024-d), ErG (315-d), RDKit 2D descriptors (208-d), and filtered Mordred descriptors (536-d, filtered from 1,613 by missing-value rate, near-zero variance, and high pairwise correlation). The <strong>MAE objective</strong> was chosen over MSE because the competition metric is MAE-based: MSE over-penalizes activity cliffs.</p>
+<p>Critically, the model exhibits severe <strong>variance compression</strong> — raw test predictions span a 0.4 log-unit band versus a true activity distribution spanning ~1.0 log-unit. This is a structural property of GBDT on structurally diverse test sets (each scaffold cluster receives the ensemble’s mean prediction). Post-hoc <strong>dynamic variance recalibration</strong> (<span class="math inline">\(\hat{y}_{cal} = \bar{\hat{y}} + (\hat{y} - \bar{\hat{y}}) \cdot \sigma_{target} / \sigma_{\hat{y}}\)</span>, target_std = 0.70) is applied to all submissions.</p>
+</section>
+<section id="lightgbm-on-docking-features-lgbm_docking" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="lightgbm-on-docking-features-lgbm_docking"><span class="header-section-number">4.3.2</span> LightGBM on Docking Features (lgbm_docking)</h3>
+<p>AutoDock Vina docking into the PXR crystal structure (PDB: 2QD9, SRC-2 coactivator peptide-bound LBD) generated 7 per-compound features: binding energy, minimum inter-molecular energy, intermolecular van der Waals energy, electrostatics, and torsional free energy (via <code>gnina/smina</code>). Eight RDKit 3D shape descriptors (asphericity, eccentricity, InertialShapeFactor, NPR1, NPR2, PMI1–3) were computed from MMFF-optimized ETKDGv3 conformers.</p>
+<p>This model contributes genuinely orthogonal signal: it encodes physical shape complementarity to PXR’s hydrophobic LBD, which 2D fingerprint models cannot access. OOF MAE = 0.499, Spearman = 0.744. The model consistently receives 20–25% SLSQP blend weight as the most independent predictor among the 2D-tabular models.</p>
+</section>
+<section id="tabpfn-in-context-learning" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="tabpfn-in-context-learning"><span class="header-section-number">4.3.3</span> TabPFN: In-Context Learning</h3>
+<p>TabPFN v2 <span class="citation" data-cites="hollmann2023tabpfn">(<a href="#ref-hollmann2023tabpfn" role="doc-biblioref">Hollmann et al. 2022</a>)</span> is a <strong>prior-data fitted network</strong> that performs in-context learning: it receives the entire training set as context at inference time and makes predictions without any gradient-based fitting on the target task. Unlike classical models that compress training data into parameters, TabPFN retains the full training set in-memory and uses attention mechanisms to “look up” the most relevant training analogues for each test compound.</p>
+<p>Features: CheMeleon (2048-d) + RDKit 2D descriptors (208-d), dimensionality-reduced to 256 via PCA. Trained using the full 4,135-compound training set within each Butina fold. OOF MAE = 0.500, Spearman ρ = 0.738.</p>
+</section>
+<section id="unimol-v1-end-to-end-fine-tuning-unimol2-and-unimol2_s3" class="level3" data-number="4.3.4">
+<h3 data-number="4.3.4" class="anchored" data-anchor-id="unimol-v1-end-to-end-fine-tuning-unimol2-and-unimol2_s3"><span class="header-section-number">4.3.4</span> UniMol v1 End-to-End Fine-Tuning (unimol2 and unimol2_s3)</h3>
+<p>Uni-Mol v1 <span class="citation" data-cites="zhou2023unimol">(<a href="#ref-zhou2023unimol" role="doc-biblioref">Zhou et al. 2023</a>)</span> is an 84M-parameter transformer pretrained on 209M drug-like molecule conformers. Rather than using frozen embeddings (as in unimol_lgbm), <strong>end-to-end fine-tuning</strong> updates all transformer weights to learn PXR-specific 3D structure-activity relationships: cavity volume, hydrophobic surface complementarity, and H-bond geometry with PXR’s Q285/S247 residues.</p>
+<p><strong>Training configuration:</strong> MAE loss, batch size 8 (GTX 1080, 8 GB VRAM), FP16 mixed precision, 25 epochs, early stopping patience 5, 5-fold Butina honest OOF, one final model on all 4,135 compounds. Script: <code>scripts/24_train_unimol2.py</code>.</p>
+<p><strong>Determinism and diversity:</strong> <code>unimol_tools</code> is fully deterministic — identical hyperparameters produce bit-identical predictions (Pearson r = 1.000, max_diff = 0.0 between two runs). A naive second run (<code>unimol2_s2</code>) added no new information. To obtain genuine diversity, the <strong>learning rate was changed to 2×10⁻⁴</strong> (4× higher, <code>unimol2_s3</code>), altering the optimization trajectory through the 84M-parameter weight space. This produced Pearson r = 0.941 with the original run (vs.&nbsp;r = 1.000 for the duplicate) and better individual accuracy (OOF MAE 0.500 vs.&nbsp;0.513). <code>unimol2_s3</code> received the highest single-model blend weight (24.8%) in the final ensemble.</p>
+</section>
+<section id="tabicl-in-context-learning-at-scale" class="level3" data-number="4.3.5">
+<h3 data-number="4.3.5" class="anchored" data-anchor-id="tabicl-in-context-learning-at-scale"><span class="header-section-number">4.3.5</span> TabICL: In-Context Learning at Scale</h3>
+<p>TabICL <span class="citation" data-cites="tabicl2025">(<a href="#ref-tabicl2025" role="doc-biblioref">Qu et al. 2025</a>)</span> extends in-context learning to the full 4,135-compound training set (TabPFN’s practical limit is ~4,000 samples). Feature pipeline: CheMeleon (2048-d) + ECFP4 Morgan fingerprints (2048-d) + RDKit 2D descriptors (208-d) → PCA-256. OOF MAE = 0.505, Spearman = 0.731.</p>
+<p>Variants explored: <code>tabicl_3d</code> (+ UniMol 3D embeddings, OOF MAE = 0.518, 0% blend weight — correlated with base at r &gt; 0.99) and <code>tabicl_chemprop</code> (+ PXR-fine-tuned Chemprop MPNN fingerprints, 300-d, extracted via honest OOF — predictions identical to base tabicl; the fine-tuned embeddings add no information beyond what CheMeleon+ECFP4+rdkit2d PCA-256 already captures).</p>
+</section>
+</section>
+</section>
+<section id="ensemble-strategy" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Ensemble Strategy</h1>
+<section id="slsqp-simplex-optimization" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="slsqp-simplex-optimization"><span class="header-section-number">5.1</span> SLSQP Simplex Optimization</h2>
+<p>Predictions from all base models are combined by a <strong>weighted mean blend</strong>, with weights optimized on out-of-fold (OOF) predictions:</p>
+<p><span class="math display">\[\text{minimize}_{w \geq 0, \sum w_i = 1} \quad \text{MAE}\left(\sum_i w_i \hat{y}_i^{\text{OOF}}, y\right)\]</span></p>
+<p>using SLSQP (Sequential Least Squares Quadratic Programming). The non-negative simplex constraint prevents negative weights, which is appropriate for this ensemble: all models have genuine positive predictive value; the goal is weighting, not correction.</p>
+<p>We also evaluated Ridge (L2 regularized, allows negative “correction” weights) and NNLS stackers using honest nested cross-validation. Ridge achieved OOF MAE = 0.492 vs.&nbsp;SLSQP’s 0.4695 on the early 8-model ensemble, but the SLSQP blend was chosen for the final submission: Ridge overfits the OOF meta-features and its negative-coefficient advantage disappears as the model set expands and pairwise correlations increase.</p>
+</section>
+<section id="dynamic-variance-recalibration" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="dynamic-variance-recalibration"><span class="header-section-number">5.2</span> Dynamic Variance Recalibration</h2>
+<p>All models exhibit variance compression on structurally novel test sets: raw prediction standard deviation is substantially narrower than the true label distribution. Recalibration scales predictions to match a target standard deviation:</p>
+<p><span class="math display">\[\hat{y}_{cal} = \bar{\hat{y}} + \left(\hat{y} - \bar{\hat{y}}\right) \cdot \frac{\sigma_{target}}{\sigma_{\hat{y}}}\]</span></p>
+<p>The target_std = 0.70 was selected by sweeping from 0.55 to 1.12 and observing the number of predictions clipped at the pEC50 boundary. At target_std = 0.70, approximately 8–11 of 513 test predictions are clipped (&lt; 2%), vs.&nbsp;46 clips at target_std = 1.12 (matching training std). Submissions 16–17 used target_std = 0.90, producing slightly worse leaderboard MAE due to over-spreading; all subsequent submissions reverted to 0.70.</p>
+</section>
+<section id="model-diversity" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="model-diversity"><span class="header-section-number">5.3</span> Model Diversity</h2>
+<p>The core reason unimol2 and unimol2_s3 receive the most ensemble weight despite similar individual MAE to LGBM variants is <strong>pairwise Pearson correlation with the rest of the ensemble</strong>. LGBM variants are highly correlated (r &gt; 0.99); tabpfn and tabicl share r ≈ 0.94 with each other. In contrast, unimol2 has r ≈ 0.89–0.94 with all 2D models — its 3D-grounded predictions capture complementary error patterns that 2D fingerprint models systematically miss.</p>
+</section>
+</section>
+<section id="results" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Results</h1>
+<section id="phase-1-leaderboard-progression" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="phase-1-leaderboard-progression"><span class="header-section-number">6.1</span> Phase 1 Leaderboard Progression</h2>
+<div id="cell-fig-progression" class="cell" data-fig-height="5" data-fig-width="10" data-execution_count="1">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.patches <span class="im">as</span> mpatches</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># All submissions with leaderboard results</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>subs <span class="op">=</span> {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>:  {<span class="st">"mae"</span>: <span class="fl">0.763</span>, <span class="st">"spearman"</span>: <span class="fl">0.579</span>, <span class="st">"label"</span>: <span class="st">"Sub 1</span><span class="ch">\n</span><span class="st">LGBM only</span><span class="ch">\n</span><span class="st">(active data)"</span>},</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="dv">7</span>:  {<span class="st">"mae"</span>: <span class="fl">0.806</span>, <span class="st">"spearman"</span>: <span class="fl">0.576</span>, <span class="st">"label"</span>: <span class="st">"Sub 7</span><span class="ch">\n</span><span class="st">+Chemprop blend"</span>},</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="dv">9</span>:  {<span class="st">"mae"</span>: <span class="fl">0.595</span>, <span class="st">"spearman"</span>: <span class="fl">0.746</span>, <span class="st">"label"</span>: <span class="st">"Sub 9</span><span class="ch">\n</span><span class="st">Full training data</span><span class="ch">\n</span><span class="st">(4,135 compounds)"</span>},</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="dv">10</span>: {<span class="st">"mae"</span>: <span class="fl">0.602</span>, <span class="st">"spearman"</span>: <span class="fl">0.742</span>, <span class="st">"label"</span>: <span class="va">None</span>},</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="dv">11</span>: {<span class="st">"mae"</span>: <span class="va">None</span>,  <span class="st">"spearman"</span>: <span class="fl">0.741</span>, <span class="st">"label"</span>: <span class="va">None</span>},</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="dv">12</span>: {<span class="st">"mae"</span>: <span class="fl">0.551</span>, <span class="st">"spearman"</span>: <span class="va">None</span>,  <span class="st">"label"</span>: <span class="st">"Sub 12</span><span class="ch">\n</span><span class="st">+HTS Chemprop"</span>},</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="dv">13</span>: {<span class="st">"mae"</span>: <span class="fl">0.505</span>, <span class="st">"spearman"</span>: <span class="fl">0.768</span>, <span class="st">"label"</span>: <span class="st">"Sub 13</span><span class="ch">\n</span><span class="st">Ridge + recalib."</span>},</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="dv">15</span>: {<span class="st">"mae"</span>: <span class="fl">0.470</span>, <span class="st">"spearman"</span>: <span class="fl">0.791</span>, <span class="st">"label"</span>: <span class="st">"Sub 15</span><span class="ch">\n</span><span class="st">+UniMol fine-tune"</span>},</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="dv">18</span>: {<span class="st">"mae"</span>: <span class="fl">0.469</span>, <span class="st">"spearman"</span>: <span class="fl">0.797</span>, <span class="st">"label"</span>: <span class="st">"Sub 18</span><span class="ch">\n</span><span class="st">16-model blend"</span>},</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="dv">19</span>: {<span class="st">"mae"</span>: <span class="fl">0.469</span>, <span class="st">"spearman"</span>: <span class="fl">0.797</span>, <span class="st">"label"</span>: <span class="va">None</span>},</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="dv">20</span>: {<span class="st">"mae"</span>: <span class="fl">0.4682</span>,<span class="st">"spearman"</span>: <span class="fl">0.805</span>, <span class="st">"label"</span>: <span class="st">"Sub 20</span><span class="ch">\n</span><span class="st">+UniMol LR diversity</span><span class="ch">\n</span><span class="st">(FINAL)"</span>},</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>xs <span class="op">=</span> <span class="bu">sorted</span>(subs.keys())</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>maes <span class="op">=</span> [subs[x][<span class="st">"mae"</span>] <span class="cf">for</span> x <span class="kw">in</span> xs]</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>spear <span class="op">=</span> [subs[x][<span class="st">"spearman"</span>] <span class="cf">for</span> x <span class="kw">in</span> xs]</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>fig, ax1 <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> ax1.twinx()</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># MAE line</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>mae_xs <span class="op">=</span> [x <span class="cf">for</span> x <span class="kw">in</span> xs <span class="cf">if</span> subs[x][<span class="st">"mae"</span>] <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>]</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>mae_ys <span class="op">=</span> [subs[x][<span class="st">"mae"</span>] <span class="cf">for</span> x <span class="kw">in</span> mae_xs]</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>ax1.plot(mae_xs, mae_ys, <span class="st">"o-"</span>, color<span class="op">=</span><span class="st">"#1f77b4"</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">6</span>, label<span class="op">=</span><span class="st">"LB MAE"</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Spearman line</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>sp_xs <span class="op">=</span> [x <span class="cf">for</span> x <span class="kw">in</span> xs <span class="cf">if</span> subs[x][<span class="st">"spearman"</span>] <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>]</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>sp_ys <span class="op">=</span> [subs[x][<span class="st">"spearman"</span>] <span class="cf">for</span> x <span class="kw">in</span> sp_xs]</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>ax2.plot(sp_xs, sp_ys, <span class="st">"s--"</span>, color<span class="op">=</span><span class="st">"#d62728"</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">6</span>, label<span class="op">=</span><span class="st">"LB Spearman ρ"</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Highlight final submission</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>ax1.scatter([<span class="dv">20</span>], [<span class="fl">0.4682</span>], color<span class="op">=</span><span class="st">"#2ca02c"</span>, s<span class="op">=</span><span class="dv">200</span>, zorder<span class="op">=</span><span class="dv">5</span>, marker<span class="op">=</span><span class="st">"*"</span>)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Annotations for key milestones</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>annotated <span class="op">=</span> {<span class="dv">9</span>, <span class="dv">12</span>, <span class="dv">13</span>, <span class="dv">15</span>, <span class="dv">20</span>}</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> sub_id <span class="kw">in</span> annotated:</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> subs[sub_id][<span class="st">"label"</span>]:</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        mae_val <span class="op">=</span> subs[sub_id][<span class="st">"mae"</span>]</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> mae_val:</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>            offset_y <span class="op">=</span> <span class="fl">0.015</span> <span class="cf">if</span> sub_id <span class="kw">not</span> <span class="kw">in</span> {<span class="dv">9</span>, <span class="dv">20</span>} <span class="cf">else</span> <span class="op">-</span><span class="fl">0.025</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>            ax1.annotate(</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>                subs[sub_id][<span class="st">"label"</span>],</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>                xy<span class="op">=</span>(sub_id, mae_val),</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>                xytext<span class="op">=</span>(sub_id, mae_val <span class="op">+</span> offset_y),</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>                fontsize<span class="op">=</span><span class="fl">7.5</span>,</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>                ha<span class="op">=</span><span class="st">"center"</span>,</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>                va<span class="op">=</span><span class="st">"bottom"</span> <span class="cf">if</span> offset_y <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">"top"</span>,</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>                arrowprops<span class="op">=</span><span class="bu">dict</span>(arrowstyle<span class="op">=</span><span class="st">"-"</span>, color<span class="op">=</span><span class="st">"gray"</span>, lw<span class="op">=</span><span class="fl">0.8</span>),</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">"Submission Number"</span>, fontsize<span class="op">=</span><span class="dv">11</span>)</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">"Leaderboard MAE (↓ better)"</span>, fontsize<span class="op">=</span><span class="dv">11</span>, color<span class="op">=</span><span class="st">"#1f77b4"</span>)</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">"Leaderboard Spearman ρ (↑ better)"</span>, fontsize<span class="op">=</span><span class="dv">11</span>, color<span class="op">=</span><span class="st">"#d62728"</span>)</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>ax1.tick_params(axis<span class="op">=</span><span class="st">"y"</span>, labelcolor<span class="op">=</span><span class="st">"#1f77b4"</span>)</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>ax2.tick_params(axis<span class="op">=</span><span class="st">"y"</span>, labelcolor<span class="op">=</span><span class="st">"#d62728"</span>)</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>ax1.set_xticks(xs)</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="fl">0.5</span>, <span class="fl">21.5</span>)</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="fl">0.40</span>, <span class="fl">0.90</span>)</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>ax2.set_ylim(<span class="fl">0.45</span>, <span class="fl">0.90</span>)</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>ax1.spines[<span class="st">"top"</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>ax1.grid(axis<span class="op">=</span><span class="st">"y"</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>lines1, labs1 <span class="op">=</span> ax1.get_legend_handles_labels()</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>lines2, labs2 <span class="op">=</span> ax2.get_legend_handles_labels()</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>ax1.legend(lines1 <span class="op">+</span> lines2, labs1 <span class="op">+</span> labs2, loc<span class="op">=</span><span class="st">"upper right"</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">"Phase 1 Leaderboard Progression — 20 Submissions"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="fig-progression" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-progression-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pxr_challenge_files/figure-html/fig-progression-output-1.png" width="948" height="469" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-progression-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Phase 1 leaderboard trajectory. Each point is a submitted prediction. MAE (left axis, lower is better) and Spearman ρ (right axis, higher is better) are shown. Key modeling milestones are annotated. The green star marks the final submission (Sub 20).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="final-ensemble-composition" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="final-ensemble-composition"><span class="header-section-number">6.2</span> Final Ensemble Composition</h2>
+<div id="cell-fig-ensemble" class="cell" data-fig-height="4.5" data-fig-width="10" data-execution_count="2">
+<details class="code-fold">
+<summary>Show code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fig, (ax1, ax2) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="fl">4.5</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Left: blend weights ────────────────────────────────────────────────────────</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>models <span class="op">=</span> [<span class="st">"unimol2_s3</span><span class="ch">\n</span><span class="st">(LR=2e-4)"</span>, <span class="st">"lgbm_docking"</span>, <span class="st">"tabpfn"</span>, <span class="st">"unimol2</span><span class="ch">\n</span><span class="st">(LR=5e-5)"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>          <span class="st">"unimol2_s2</span><span class="ch">\n</span><span class="st">(duplicate)"</span>, <span class="st">"tabicl"</span>, <span class="st">"tabicl_chemprop</span><span class="ch">\n</span><span class="st">(duplicate)"</span>]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> [<span class="fl">24.8</span>, <span class="fl">23.5</span>, <span class="fl">20.0</span>, <span class="fl">10.8</span>, <span class="fl">10.8</span>, <span class="fl">5.1</span>, <span class="fl">5.1</span>]</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> [<span class="st">"#2ca02c"</span> <span class="cf">if</span> w <span class="op">&gt;</span> <span class="dv">15</span> <span class="cf">else</span> <span class="st">"#1f77b4"</span> <span class="cf">if</span> w <span class="op">&gt;</span> <span class="dv">8</span> <span class="cf">else</span> <span class="st">"#aec7e8"</span> <span class="cf">for</span> w <span class="kw">in</span> weights]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>bars <span class="op">=</span> ax1.barh(models[::<span class="op">-</span><span class="dv">1</span>], weights[::<span class="op">-</span><span class="dv">1</span>], color<span class="op">=</span>colors[::<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">"SLSQP Blend Weight (%)"</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">"Sub 20 Ensemble Weights"</span>, fontsize<span class="op">=</span><span class="dv">11</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>ax1.axvline(x<span class="op">=</span><span class="dv">0</span>, color<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bar, w <span class="kw">in</span> <span class="bu">zip</span>(bars, weights[::<span class="op">-</span><span class="dv">1</span>]):</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    ax1.text(bar.get_width() <span class="op">+</span> <span class="fl">0.3</span>, bar.get_y() <span class="op">+</span> bar.get_height()<span class="op">/</span><span class="dv">2</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>             <span class="ss">f"</span><span class="sc">{</span>w<span class="sc">:.1f}</span><span class="ss">%"</span>, va<span class="op">=</span><span class="st">"center"</span>, fontsize<span class="op">=</span><span class="fl">8.5</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="dv">0</span>, <span class="dv">32</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>ax1.spines[<span class="st">"top"</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>ax1.spines[<span class="st">"right"</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Right: OOF vs LB MAE scatter ──────────────────────────────────────────────</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>oof_mae  <span class="op">=</span> [<span class="fl">0.492</span>, <span class="fl">0.478</span>, <span class="fl">0.473</span>, <span class="fl">0.473</span>, <span class="fl">0.4728</span>, <span class="fl">0.469</span>, <span class="fl">0.4695</span>]</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>lb_mae   <span class="op">=</span> [<span class="fl">0.505</span>, <span class="fl">0.470</span>, <span class="va">None</span>,  <span class="va">None</span>,  <span class="fl">0.469</span>,  <span class="fl">0.469</span>, <span class="fl">0.4682</span>]</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>sub_nums <span class="op">=</span> [<span class="dv">13</span>,    <span class="dv">15</span>,    <span class="dv">16</span>,    <span class="dv">17</span>,    <span class="dv">18</span>,     <span class="dv">19</span>,    <span class="dv">20</span>]</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>valid <span class="op">=</span> [(o, l, s) <span class="cf">for</span> o, l, s <span class="kw">in</span> <span class="bu">zip</span>(oof_mae, lb_mae, sub_nums) <span class="cf">if</span> l <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>]</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>xs_v, ys_v, ss_v <span class="op">=</span> <span class="bu">zip</span>(<span class="op">*</span>valid)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>ax2.scatter(xs_v, ys_v, s<span class="op">=</span><span class="dv">80</span>, color<span class="op">=</span><span class="st">"#1f77b4"</span>, zorder<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>ax2.scatter([<span class="fl">0.4695</span>], [<span class="fl">0.4682</span>], s<span class="op">=</span><span class="dv">150</span>, color<span class="op">=</span><span class="st">"#2ca02c"</span>, zorder<span class="op">=</span><span class="dv">5</span>, marker<span class="op">=</span><span class="st">"*"</span>,</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>            label<span class="op">=</span><span class="st">"Sub 20 (final)"</span>)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> o, l, s <span class="kw">in</span> valid:</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    ax2.annotate(<span class="ss">f"S</span><span class="sc">{</span>s<span class="sc">}</span><span class="ss">"</span>, (o, l), textcoords<span class="op">=</span><span class="st">"offset points"</span>,</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>                 xytext<span class="op">=</span>(<span class="dv">4</span>, <span class="dv">3</span>), fontsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>lim_lo, lim_hi <span class="op">=</span> <span class="fl">0.455</span>, <span class="fl">0.515</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>ax2.plot([lim_lo, lim_hi], [lim_lo, lim_hi], <span class="st">"k--"</span>, lw<span class="op">=</span><span class="dv">1</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, label<span class="op">=</span><span class="st">"OOF = LB"</span>)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>ax2.fill_between([lim_lo, lim_hi], [lim_lo, lim_hi],</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>                 [lim_hi, lim_hi], alpha<span class="op">=</span><span class="fl">0.06</span>, color<span class="op">=</span><span class="st">"red"</span>, label<span class="op">=</span><span class="st">"OOF overestimates LB"</span>)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">"OOF MAE (cross-validation)"</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">"Leaderboard MAE (blind test)"</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>ax2.set_title(<span class="st">"CV vs. Leaderboard Gap (Subs 13–20)"</span>, fontsize<span class="op">=</span><span class="dv">11</span>)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>ax2.set_xlim(lim_lo, lim_hi)</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>ax2.set_ylim(lim_lo, lim_hi)</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>ax2.legend(fontsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>ax2.spines[<span class="st">"top"</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>ax2.spines[<span class="st">"right"</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="fig-ensemble" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ensemble-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pxr_challenge_files/figure-html/fig-ensemble-output-1.png" width="949" height="421" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ensemble-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Final Sub 20 ensemble. Left: SLSQP blend weights for non-zero models; combined UniMol contribution (unimol2 + s2 + s3) is 46.4%. Right: OOF MAE vs.&nbsp;leaderboard MAE for each submission with both values known, showing the consistent gap between in-sample CV and blind test performance.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="complete-submission-history" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="complete-submission-history"><span class="header-section-number">6.3</span> Complete Submission History</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Sub</th>
+<th>Description</th>
+<th>OOF MAE</th>
+<th>LB MAE</th>
+<th>LB RAE</th>
+<th>LB Spearman ρ</th>
+<th>Rank</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>LGBM v2, active-only training (n=1,334), 3.7× recal</td>
+<td>0.227</td>
+<td>0.763</td>
+<td>0.958</td>
+<td>0.579</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>MMP-delta baseline</td>
+<td>—</td>
+<td>1.353</td>
+<td>1.699</td>
+<td>−0.071</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>LGBM v2, 2.5× recal (calibration test)</td>
+<td>0.227</td>
+<td>0.779</td>
+<td>0.978</td>
+<td>0.579</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Chemprop Run 1 (d_h=1,200, mean-collapse), 2.5× recal</td>
+<td>0.230</td>
+<td>0.859</td>
+<td>1.078</td>
+<td>0.510</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>LGBM 0.73 + Chemprop 0.27 blend, 2.5× recal</td>
+<td>0.226</td>
+<td>0.806</td>
+<td>1.011</td>
+<td>0.576</td>
+<td>191</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Sub 7 + mean offset +0.2335 (error)</td>
+<td>0.226</td>
+<td>0.859</td>
+<td>1.078</td>
+<td>0.510</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>Full training data (n=4,135) LGBM + Chemprop, 2.18× recal</td>
+<td>0.496</td>
+<td>0.595</td>
+<td>0.749</td>
+<td>0.746</td>
+<td><strong>168</strong></td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>+ECFP6 / FCFP4 LGBM variants (correlated, minor regression)</td>
+<td>0.496</td>
+<td>0.602</td>
+<td>0.758</td>
+<td>0.742</td>
+<td>182</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>+lgbm_chemeleon (CheMeleon embeddings, 59% weight)</td>
+<td>0.496</td>
+<td>—</td>
+<td>0.761</td>
+<td>0.741</td>
+<td>186</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>+chemprop_hts (HTS-pretrained MPNN, 21% weight)</td>
+<td>0.496</td>
+<td>0.551</td>
+<td>0.692</td>
+<td>—</td>
+<td><strong>141</strong></td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>Ridge stacker (8 models), target_std=0.70</td>
+<td>0.492</td>
+<td>0.505</td>
+<td>0.634</td>
+<td>0.768</td>
+<td><strong>79</strong></td>
+</tr>
+<tr class="even">
+<td>14</td>
+<td>+lgbm_docking (physics-based), target_std=0.70</td>
+<td>0.487</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>10-model SLSQP blend (unimol2 fine-tuned, 40.6% weight), target_std=0.70</td>
+<td>0.478</td>
+<td>0.470</td>
+<td>0.590</td>
+<td>0.791</td>
+<td><strong>47</strong></td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td>+TabPFN (full n, PCA-256), +lgbm_optimal, +TabICL; target_std=0.90</td>
+<td>0.473</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>17</td>
+<td>+CatBoost; target_std=0.90</td>
+<td>0.473</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>18</td>
+<td>16-model SLSQP; +tabicl_3d, +unimol2_s2; target_std=0.70</td>
+<td>0.4728</td>
+<td>0.469</td>
+<td>0.589</td>
+<td>0.797</td>
+<td><strong>67</strong></td>
+</tr>
+<tr class="odd">
+<td>19</td>
+<td>+tabicl_chemprop (Chemprop-FT embeddings, identical to tabicl)</td>
+<td>0.4728</td>
+<td>0.469</td>
+<td>0.589</td>
+<td>0.797</td>
+<td><strong>67</strong></td>
+</tr>
+<tr class="even">
+<td><strong>20</strong></td>
+<td><strong>+unimol2_s3 (LR=2×10⁻⁴ diversity); 17-model SLSQP; target_std=0.70</strong></td>
+<td><strong>0.4695</strong></td>
+<td><strong>0.4682</strong></td>
+<td><strong>0.5876</strong></td>
+<td><strong>0.8051</strong></td>
+<td><strong>68</strong></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="phase-1-trajectory" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="phase-1-trajectory"><span class="header-section-number">6.4</span> Phase 1 Trajectory</h2>
+<p><strong>The calibration trap (Subs 1–8):</strong> The first eight submissions were dominated by two cascading failures. First, models were trained on only the 1,334 active compounds (pEC50 ≥ 5.0), discarding 67.7% of measured data and leaving the model unable to predict weakly-active analogs. Second, variance recalibration factors were derived from the training distribution rather than the test distribution — over-spreading predictions and inflating MAE even when rank ordering was correct. Sub 1 achieved Spearman = 0.579 (genuinely predictive ranking) but MAE = 0.763 (terrible absolute accuracy). Sub 8 made this worse by misinterpreting R² = −0.234 as a mean prediction bias and adding a +0.2335 offset to all predictions, which further worsened every metric.</p>
+<p><strong>The data coverage fix (Sub 9):</strong> Training on all 4,135 compounds (pEC50 1.61–7.55) — the single change between Sub 7 and Sub 9 — reduced MAE from 0.806 to 0.595 (−26%) and improved Spearman from 0.576 to 0.746 (+30%). This is the largest improvement in the entire Phase 1 trajectory. The lesson: in a lead-optimization challenge, the test analogs span the full activity spectrum; any training data filter that excludes weakly-active compounds will produce systematic prediction failures on those compounds.</p>
+<p><strong>Building the model zoo (Subs 10–15):</strong> The Sub 9 baseline (LGBM + Chemprop) was systematically expanded by adding models from new representation families:</p>
+<ul>
+<li><em>Sub 10 (ECFP6/FCFP4 LGBM variants):</em> Minor regression — fingerprint variants are too correlated with existing LGBM (r &gt; 0.99) to add information.</li>
+<li><em>Sub 11 (+lgbm_chemeleon):</em> CheMeleon 2048-d frozen graph embeddings provide global bioactivity context. Becomes the dominant model (59% blend weight). Modest improvement despite high individual MAE (0.500 OOF) because of low correlation with fingerprint LGBM.</li>
+<li><em>Sub 12 (+chemprop_hts):</em> The single largest model-addition improvement (+45 rank positions). HTS-pretraining on 7,238 structurally diverse PXR compounds gives the MPNN backbone broad chemical space initialization before fine-tuning on Octant pEC50. Orthogonal to fingerprint models (r ≈ 0.91 with lgbm).</li>
+<li><em>Sub 13 (Ridge stacker + target_std=0.70):</em> Conservative variance recalibration (1.13× vs.&nbsp;2.19×) cuts prediction clipping from 46 to 8 compounds and improves MAE from 0.551 to 0.505.</li>
+<li><em>Sub 15 (+UniMol end-to-end fine-tuning):</em> UniMol v1 trained end-to-end on PXR pEC50 receives 40.6% SLSQP weight — the highest of any single model to that point. Its 3D-grounded conformer representations are genuinely orthogonal to all 2D models (Pearson r ≈ 0.89). MAE drops to 0.470, Spearman rises to 0.791, rank improves to 47.</li>
+</ul>
+<p><strong>Ensemble refinement (Subs 16–20):</strong> Adding TabPFN (full n=4,135 in-context learning), lgbm_optimal (CheMeleon+ECFP4+rdkit2d without Mordred noise), TabICL (scalable in-context learning), and CatBoost (Subs 16–17) reduced OOF MAE to 0.473 but worsened leaderboard MAE due to target_std=0.90 over-spreading. Reverting to target_std=0.70 in Sub 18 restored the leaderboard performance.</p>
+<p>Subs 18 and 19 produced <strong>identical results</strong> (both rank 67, MAE = 0.469) — confirming that <code>tabicl_chemprop</code> (adding fine-tuned Chemprop MPNN embeddings to TabICL features) contributed zero new information. The fine-tuned MPNN embeddings are already captured in the CheMeleon+ECFP4+rdkit2d feature space.</p>
+<p>Sub 20 added <code>unimol2_s3</code> (UniMol fine-tuned at LR = 2×10⁻⁴) which achieved genuine diversity from the original run (Pearson r = 0.941 vs.&nbsp;r = 1.000 for the duplicate run). Sub 20 improved MAE to 0.4682 and Spearman to 0.8051. The rank moved to 68 (vs.&nbsp;67 for Subs 18/19) due to new entrants joining the leaderboard between May 22 and May 23; the absolute performance improvement is real.</p>
+</section>
+<section id="final-leaderboard-performance" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="final-leaderboard-performance"><span class="header-section-number">6.5</span> Final Leaderboard Performance</h2>
+<p><strong>Sub 20 — Final submission:</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Sub 20 value</th>
+<th>Rank-19 reference team</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MAE</td>
+<td><strong>0.4682</strong></td>
+<td>0.4433</td>
+</tr>
+<tr class="even">
+<td>RAE</td>
+<td><strong>0.5876</strong></td>
+<td>~0.556</td>
+</tr>
+<tr class="odd">
+<td>R²</td>
+<td>0.5100</td>
+<td>~0.53</td>
+</tr>
+<tr class="even">
+<td>Spearman ρ</td>
+<td><strong>0.8051</strong></td>
+<td>0.8286</td>
+</tr>
+<tr class="odd">
+<td>Kendall’s τ</td>
+<td>0.6043</td>
+<td>~0.625</td>
+</tr>
+<tr class="even">
+<td><strong>Leaderboard rank</strong></td>
+<td><strong>68</strong></td>
+<td>19</td>
+</tr>
+</tbody>
+</table>
+<p>The ~0.025 MAE gap to the rank-19 reference team is structurally explained by <strong>encoder quality</strong>: their dominant model uses TabICL on HTS-pretrained CheMeleon embeddings (RMSE ≈ 0.495 on their CV). HTS pretraining encodes bioactivity patterns from broad screening data — their CheMeleon has seen millions of HTS activity readouts, while ours is trained only on ChEMBL/PubChem literature data. Our TabICL on standard CheMeleon achieves OOF MAE = 0.505. The ~0.01 MAE difference at the model level, compounded across multiple model slots in the ensemble, accounts for most of the leaderboard gap.</p>
+</section>
+<section id="phase-2-final-submission" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="phase-2-final-submission"><span class="header-section-number">6.6</span> Phase 2 Final Submission</h2>
+<p>When <strong>Analog Set 1</strong> — 253 of the 513 test compounds — was unblinded, those labels were <strong>added to the training set</strong> (<code>source = analog_set1</code>) rather than used for post-hoc correction. The full curated set grew to 11,487 compounds; the tabular and UniMol models train on the primary-source subset (<code>{openadmet, analog_set1, htchem, htchem_semi_pure}</code> = 4,827 compounds / 4,718 with valid pEC50). A 9-model SLSQP blend (<code>scripts/39_ensemble_phase2.py</code>) re-weights toward the structural learners — unimol2_s3 24.5%, chemprop_4task 22.1%, unimol2 17.4%, catboost 14.7%, lgbm 9.6%, unimol2_s4 8.9%, tabicl 2.8% — for OOF MAE = 0.4829 / RAE_test = 0.604. Variance recalibration is a no-op here (raw std 0.683 ≈ target 0.70). The 253 true Set-1 labels are substituted back into the final 513-row submission (<code>submissions/phase2/final_submission.csv</code>); under blinded-Set-2 scoring this is neutral on the scored compounds and a hedge if the full set is rescored.</p>
+<p><strong>Post-hoc calibration was tested and rejected.</strong> A linear <span class="math inline">\(y_{corr}=a\hat y+b\)</span> fit on the 253 real labels gave <em>no</em> out-of-sample gain — 5-fold held-out MAE on the Set1-naive Sub-20 blend went 0.4817 → 0.4865, and the blend’s mean bias was only +0.13. The Phase-2 improvement is attributable entirely to retraining with Set 1, not to correcting predictions afterward. One caveat governs interpretation: the Phase-2 ensemble’s score <em>on Set 1</em> (MAE 0.27, Spearman 0.95) is in-sample (those compounds are in its training set) and is <strong>not</strong> an estimate of blinded-Set-2 performance; it correlates 0.96 with Sub 20 on the blinded 260, bounding the downside. The full pipeline is reproducible and was verified bit-identical end-to-end (<code>submissions/phase2/REPRODUCE.md</code>).</p>
+</section>
+</section>
+<section id="discussion" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Discussion</h1>
+<section id="what-worked" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="what-worked"><span class="header-section-number">7.1</span> What Worked</h2>
+<p><strong>Training data coverage.</strong> The single largest improvement (Sub 9, −0.211 MAE) came from switching to full-data training. This is the most important lesson from Phase 1: in a lead-optimization benchmark, test analogs span the full activity spectrum. Filtering training data on activity thresholds creates systematic blind spots.</p>
+<p><strong>3D molecular representations.</strong> UniMol end-to-end fine-tuning provides the most diverse predictions of any model in the ensemble (Pearson r ≈ 0.89 with all 2D models). The PXR LBD is a large, flexible, shape-sensitive cavity; 3D conformer-aware representations capture structure-activity patterns invisible to 2D fingerprints. The docking model provides independent orthogonal signal from physics-based shape complementarity.</p>
+<p><strong>Hyperparameter-driven model diversity.</strong> When <code>unimol_tools</code> proved to be fully deterministic, re-running with an identical hyperparameter set produced a useless duplicate (r = 1.000). Changing the learning rate to 2×10⁻⁴ (4× higher) produced genuine diversity (r = 0.941) with slightly better individual accuracy.</p>
+<p><strong>Conservative variance recalibration.</strong> Targeting target_std = 0.70 (vs.&nbsp;0.90 in Subs 16–17 and 1.12 matching training std) prevents over-spreading predictions into implausible ranges. The test distribution of analog pEC50 values is narrower than the training distribution; calibrating to the training std over-spreads by ~40%.</p>
+</section>
+<section id="what-did-not-work" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="what-did-not-work"><span class="header-section-number">7.2</span> What Did Not Work</h2>
+<p><strong>Correlated model additions.</strong> Adding ECFP6/FCFP4 fingerprint LGBM variants (Subs 10) hurt performance because r &gt; 0.99 with existing LGBM — noise without signal. Similarly, <code>unimol2_s2</code> (deterministic duplicate) added nothing. <code>tabicl_chemprop</code> and <code>tabicl_3d</code> were both redundant with the base tabicl.</p>
+<p><strong>Over-aggressive recalibration.</strong> Subs 16–17 with target_std = 0.90 produced slightly worse LB MAE despite better OOF MAE. The test distribution is narrower than 0.90.</p>
+<p><strong>MMP-delta at 9.2% coverage.</strong> The Matched Molecular Pairs approach is theoretically powerful for analog prediction — but it requires high-quality training neighbors. With only 9.2% of test compounds having Tanimoto &gt; 0.4 to any training compound, 90.8% of predictions were anchored to distant, uninformative neighbors, destroying rank ordering (Sub 2, Spearman = −0.071).</p>
+<p><strong>Mean offset correction (Sub 8).</strong> Misinterpreting R² = −0.234 as a mean prediction bias and adding +0.2335 to all predictions moved every value further from the true distribution. R² is a <em>relative fit metric</em> (variance explained); it carries no information about the mean prediction level.</p>
+</section>
+<section id="key-lessons-learned" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="key-lessons-learned"><span class="header-section-number">7.3</span> Key Lessons Learned</h2>
+<ol type="1">
+<li><p><strong>Data coverage dominates architecture.</strong> The full-data fix was 4× larger than any subsequent model addition. Verify that the training set covers the full activity range of expected test compounds before building complex models.</p></li>
+<li><p><strong>Check Pearson r before adding a model.</strong> If a new model correlates r &gt; 0.95 with any existing ensemble member, it is unlikely to improve the blend regardless of its individual MAE.</p></li>
+<li><p><strong>Determinism is silent.</strong> <code>unimol_tools</code> produces identical outputs when run twice with the same settings — there is no random seed parameter to change. The only way to generate genuine UniMol diversity is to change a training hyperparameter (learning rate, epochs, batch size).</p></li>
+<li><p><strong>Calibrate to the test distribution, not the training distribution.</strong> The test analogs of potent hits span a narrower pEC50 range than the full training set. Using the training std as the recalibration target over-spreads predictions.</p></li>
+<li><p><strong>OOF Spearman is a pessimistic lower bound.</strong> Butina CV withholds entire scaffold families; the final model trained on all data has seen the parent scaffolds. Leaderboard Spearman is consistently 0.05–0.15 higher than OOF Spearman.</p></li>
+</ol>
+</section>
+<section id="gap-to-top-team" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="gap-to-top-team"><span class="header-section-number">7.4</span> Gap to Top Team</h2>
+<p>The rank-19 reference team’s margin over our best submission is ~0.025 MAE — approximately 5% relative improvement. Based on publicly available methodology information, their advantage is primarily the HTS-pretrained CheMeleon encoder, which was trained on millions of HTS activity datapoints rather than literature data only. This encoder is not publicly available. Our standard CheMeleon-based TabICL achieves OOF MAE = 0.505; their HTS-pretrained version achieves approximately RMSE = 0.495. Compounded across multiple model slots in the ensemble, this ~0.010 model-level gap explains most of the leaderboard difference. Further improvement without access to that encoder would require additional 3D model diversity (e.g., additional UniMol variants at different learning rates) or access to unpublished PXR screening data.</p>
+</section>
+</section>
+<section id="phase-2-responding-to-unblinded-data" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Phase 2: Responding to Unblinded Data</h1>
+<section id="standing-at-the-halfway-mark" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="standing-at-the-halfway-mark"><span class="header-section-number">8.1</span> Standing at the Halfway Mark</h2>
+<p>The interim leaderboard (released May 26, 2026) scored every Phase 1 submission against the <strong>full 513-compound test set</strong> — both Analog Set 1 and the still-blinded Analog Set 2 — rather than the live board’s Set 1-only scoring. Our final Phase 1 submission (Sub 20) ranked <strong>33rd</strong> on this interim board with MAE = 0.440, RAE = 0.581, Spearman ρ = 0.815. This represents a substantial improvement over our live rank of 68, indicating that our ensemble generalizes better to the Set 2 analogs than the live board suggested.</p>
+<p>The top-10 interim entries are separated by less than 0.03 MAE, and the compact letter display (CLD) from paired bootstrap testing shows no statistically significant differences among the top 30 entries. Any improvement to our Phase 1 pipeline has a realistic chance of moving us into the top 15.</p>
+</section>
+<section id="phase-2-strategy" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="phase-2-strategy"><span class="header-section-number">8.2</span> Phase 2 Strategy</h2>
+<p>Phase 2 (May 26 – July 1, 2026) differs fundamentally from Phase 1: instead of blind prediction, we now respond to labeled data. The three new levers are:</p>
+<ol type="1">
+<li><strong>Analog Set 1 unblinded labels</strong> (253 compounds) — these test analogs now have ground-truth pEC50 values and can be incorporated into the training set</li>
+<li><strong>HTChem training data</strong> — 456 crude and 96 semi-pure compounds from high-throughput chemistry workflows, with yield-corrected pEC50 via analytical chemistry calibration</li>
+<li><strong>Competitor methodology</strong> — the Phase 1 unblinding and community discussion revealed that key approaches (reactive electrophile exclusion, CheMeleon-initialized Chemprop, 4-task multitask training) significantly outperformed our Phase 1 configuration</li>
+</ol>
+</section>
+<section id="new-data" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="new-data"><span class="header-section-number">8.3</span> New Data</h2>
+<section id="phase-2-training-data-summary" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" class="anchored" data-anchor-id="phase-2-training-data-summary"><span class="header-section-number">8.3.1</span> Phase 2 Training Data Summary</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>New Compounds</th>
+<th>Key Feature</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Analog Set 1 (unblinded)</td>
+<td>253</td>
+<td>Same assay as test set; formerly blinded test compounds</td>
+</tr>
+<tr class="even">
+<td>HTChem crude</td>
+<td>456</td>
+<td>Yield-corrected pEC50 from crude reactions</td>
+</tr>
+<tr class="odd">
+<td>HTChem semi-pure</td>
+<td>96</td>
+<td>Higher purity; tighter activity estimates</td>
+</tr>
+</tbody>
+</table>
+<p>The HTChem data required special handling: pEC50 values are reported in string format with yield corrections applied via CAD (charged aerosol detection) mass-on-column calibration. Column names like <code>corrected_crude_pec50_(log)</code> required explicit <code>pd.to_numeric()</code> conversion before curation.</p>
+<p><strong>Critical implementation note:</strong> Analog Set 1 compounds are present in the blinded test parquet, so the standard anti-leakage deduplication step (removing training compounds whose InChIKey prefix matches a test compound) would have excluded all 253 Set 1 compounds. We bypass this by running curation without Set 1 in <code>raw_dfs</code>, then appending the standardized Set 1 compounds directly after the deduplication step — explicitly acknowledging that their scores are known and they will not be evaluated in Phase 2.</p>
+</section>
+</section>
+<section id="competitor-learnings" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="competitor-learnings"><span class="header-section-number">8.4</span> Competitor Learnings</h2>
+<section id="reactive-electrophile-exclusion-0.019-rae" class="level3" data-number="8.4.1">
+<h3 data-number="8.4.1" class="anchored" data-anchor-id="reactive-electrophile-exclusion-0.019-rae"><span class="header-section-number">8.4.1</span> Reactive Electrophile Exclusion (+0.019 RAE)</h3>
+<p>The <code>discoverybytes</code> team (top-performing Claude-built pipeline) identified that 754 training compounds contain reactive electrophilic warheads — acrylamides (n=236), acrylates (n=229), and aldehydes (n=87). The test set contains none of these compounds. Retaining them in training anchors activity predictions at values driven by covalent or promiscuous binding mechanisms rather than PXR LBD recognition. Removing them improved CV RAE by approximately 0.019.</p>
+<p>We implemented SMARTS-based filtering in <code>src/openadmet/data/curation.py</code> via <code>filter_reactive_electrophiles()</code>, which is automatically applied inside <code>run_curation_pipeline()</code> after deduplication.</p>
+<p><strong>PAINS/REOS filtering was evaluated and rejected</strong> by discoverybytes: removing 841 compounds that failed standard filters reduced an LGBM model’s CV RAE from 0.609 to 0.724. Despite being structurally problematic compounds, they anchor the inactive end of the activity landscape and provide calibration signal essential for predicting truly inactive analogs. We do not apply PAINS/REOS filtering.</p>
+</section>
+<section id="chemeleon-initialized-chemprop-largest-single-gain" class="level3" data-number="8.4.2">
+<h3 data-number="8.4.2" class="anchored" data-anchor-id="chemeleon-initialized-chemprop-largest-single-gain"><span class="header-section-number">8.4.2</span> CheMeleon-Initialized Chemprop (largest single gain)</h3>
+<p>discoverybytes reported that switching from random initialization to CheMeleon pretrained weights was the single largest improvement in their pipeline, reducing test RAE from ~0.62 to ~0.59. CheMeleon is an OpenADMET-trained graph neural network encoder pretrained on large-scale unlabeled chemical data.</p>
+<p>We added a new Phase 2 model (<code>chemprop_4task</code>) that loads CheMeleon backbone weights (<code>models/chemeleon/anvil_training/model.pth</code>) before PXR fine-tuning. The CheMeleon checkpoint uses <code>hidden_size = 2048</code>, requiring the Chemprop MPNN to match this dimensionality — our Phase 1 Chemprop used <code>hidden_size = 300</code>, making the weights incompatible. In PyTorch, <code>load_state_dict(strict=False)</code> does not silently skip size-mismatched parameters; it raises a <code>RuntimeError</code>. Updating <code>hidden_size = 2048</code> in the model configuration resolves this.</p>
+</section>
+<section id="task-multitask-training-0.070-rae-vs.-2-task" class="level3" data-number="8.4.3">
+<h3 data-number="8.4.3" class="anchored" data-anchor-id="task-multitask-training-0.070-rae-vs.-2-task"><span class="header-section-number">8.4.3</span> 4-Task Multitask Training (+0.070 RAE vs.&nbsp;2-task)</h3>
+<p>discoverybytes found that training jointly on four tasks — pEC50, PXR-null counter-screen, single-concentration screen, and FXR as a cross-receptor regularizer — gave a 0.070 RAE advantage over 2-task training. The multi-task objective provides structured regularization: the shared backbone must produce representations simultaneously useful for activity, counter-screen discrimination, and single-point readout, preventing overfitting to assay-specific noise in any single column.</p>
+<p>Our Phase 2 Chemprop uses pEC50 (weight 1.0) and counter-screen pEC50 (weight 0.5) as available tasks, since single-concentration and FXR data are not in the curated training parquet. The counter-screen column (<code>counter_pec50</code>) was removed from our Phase 1 Chemprop config due to low pairwise correlation with pEC50 (r² = 0.012), but discoverybytes’ results suggest it provides regulatory signal even when not correlated with the primary target.</p>
+</section>
+<section id="external-data-hurts-tabular-models" class="level3" data-number="8.4.4">
+<h3 data-number="8.4.4" class="anchored" data-anchor-id="external-data-hurts-tabular-models"><span class="header-section-number">8.4.4</span> External Data Hurts Tabular Models</h3>
+<p><code>dargason</code> (rank 14) noted that every attempt to add ChEMBL or BindingDB data hurt performance — “assay differences confound the data.” We confirmed this independently: when Tox21 and NCATS PubChem compounds (6,533 compounds from different assay protocols) were included in the tabular model training set, LightGBM OOF MAE degraded to 1.195 (vs.&nbsp;~0.53 for primary-source-only training). Despite nominally compatible pEC50 scales (Tox21 mean 4.59 vs.&nbsp;OpenADMET mean 4.34), the systematic differences in assay sensitivity, dynamic range, and compound fitness for classical cell-based reporter assays were sufficient to confuse the gradient boosting models.</p>
+<p>All tabular models (LightGBM, CatBoost, TabPFN, TabICL) now filter to primary Octant-assay sources only: <code>{openadmet, analog_set1, htchem, htchem_semi_pure}</code>. External PubChem data is retained for Chemprop backbone pretraining, where its diversity is beneficial.</p>
+</section>
+</section>
+<section id="technical-finding-feature-matrix-row-alignment" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="technical-finding-feature-matrix-row-alignment"><span class="header-section-number">8.5</span> Technical Finding: Feature Matrix Row Alignment</h2>
+<p>A practical implementation challenge arose from the structure of the Phase 2 pipeline: molecular features (fingerprints, descriptors, CheMeleon embeddings) are precomputed for <strong>all 11,487 curated training compounds</strong> in a single pass and stored in fixed-size <code>.npy</code> files. However, each model trains on a filtered subset — primary sources only (4,827 of 11,487) and among those only compounds with valid pEC50 labels (4,718 of 4,827, excluding 109 censored compounds with NaN pEC50_median).</p>
+<p>A <strong>boolean <code>row_mask</code></strong> is required to map each model’s training subset back to the correct rows of the precomputed feature arrays. Without it, the feature arrays (11,487 rows) are misaligned with the filtered training DataFrame (4,718 rows), causing shape mismatch errors. The mask must be constructed on the full-index DataFrame before filtering, applied to the feature arrays, and then the filtered training targets computed separately.</p>
+<p>The alternative design — recomputing features only for the training subset of each model — would avoid this complication but at the cost of 20–30 minutes of Mordred + PMI descriptor computation for each model run. The single-pass precomputation with <code>row_mask</code> is preferable.</p>
+<p>Two numerical issues were encountered with numpy 2.2.x on Apple Silicon:</p>
+<p><strong>Issue 1 — <code>numpy.nanvar</code> on large float32 matrices:</strong> <code>sklearn.feature_selection.VarianceThreshold</code> raises <code>ValueError: No feature in X meets the variance threshold</code> because <code>numpy.nanvar(X, axis=0)</code> returns all-zero variances for large float32 arrays (~8,500 columns × ~11,500 rows) in numpy 2.2.x. The root cause is catastrophic cancellation in float32 accumulation for the two-pass variance algorithm — <code>nanvar</code> on a single 1D column gives the correct answer, but vectorized computation over all columns simultaneously loses precision. The standard <code>.var()</code> method (which uses a different accumulation path) is unaffected. We replaced all <code>VarianceThreshold</code> calls with <code>X.var(axis=0) &gt; threshold</code> boolean masks.</p>
+<p><strong>Issue 2 — PCA overflow from unscaled descriptors:</strong> sklearn’s randomized SVD for PCA raises <code>RuntimeWarning: overflow encountered in matmul</code> and produces NaN components when applied to mixed feature matrices containing both binary fingerprint bits [0, 1] and RDKit/Mordred descriptors with extreme values (up to 52,804,348 for certain Tox21 structural descriptors). The fix is <code>StandardScaler</code> applied to float64 before PCA — this is standard practice but easy to omit when feature matrices are constructed from heterogeneous sources that individually appear well-behaved.</p>
+</section>
+<section id="phase-2-model-stack" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="phase-2-model-stack"><span class="header-section-number">8.6</span> Phase 2 Model Stack</h2>
+<section id="new-models" class="level3" data-number="8.6.1">
+<h3 data-number="8.6.1" class="anchored" data-anchor-id="new-models"><span class="header-section-number">8.6.1</span> New Models</h3>
+<p><strong>chemprop_4task:</strong> CheMeleon-initialized Chemprop v2 MPNN with 2-task multitask head (pEC50 + counter-screen). Architecture: <code>hidden_size = 2048</code> (matching CheMeleon), <code>depth = 3</code>, <code>dropout = 0.3</code>, MAE loss, 3 seeds × 5 Butina folds.</p>
+<p><strong>PMI 3D shape descriptors:</strong> 17 principal-moment-of-inertia descriptors computed from ETKDGv3 + MMFF94 conformers, capturing rod-like, disc-like, and spherical molecular geometry. Appended to the descriptor matrix for LightGBM. Note: <code>rdkit.Chem.rdMolDescriptors.CalcGravitationalIndex</code> is not available in RDKit 2026.3 — descriptor functions must be wrapped individually to avoid silent all-NaN failures that propagate through variance filtering.</p>
+</section>
+<section id="unimol-inference-augmentation" class="level3" data-number="8.6.2">
+<h3 data-number="8.6.2" class="anchored" data-anchor-id="unimol-inference-augmentation"><span class="header-section-number">8.6.2</span> UniMol Inference Augmentation</h3>
+<p>At test time, 10 randomized SMILES per compound are generated (different atom orderings → different RDKit ETKDGv3 conformers via <code>Chem.MolToSmiles(mol, doRandom=True)</code>), predictions are made for all 10 variants, and the mean is used as the final prediction. This reduces test-time prediction variance without additional training. discoverybytes employed the same technique.</p>
+</section>
+</section>
+<section id="confirmed-negative-results-from-competitors" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="confirmed-negative-results-from-competitors"><span class="header-section-number">8.7</span> Confirmed Negative Results from Competitors</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Approach</th>
+<th>Finding</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Isotonic calibration</td>
+<td>Does not generalize across scaffold-split CV (discoverybytes)</td>
+<td>Do not enable</td>
+</tr>
+<tr class="even">
+<td>Variance scaling (target_std &gt; 0.70)</td>
+<td>RAE +0.01, Spearman ↓ at 1.10× (discoverybytes)</td>
+<td>Keep target_std = 0.70</td>
+</tr>
+<tr class="odd">
+<td>Knowledge distillation</td>
+<td>Destroyed ensemble diversity, ΔRAE +0.013 (discoverybytes)</td>
+<td>Do not implement</td>
+</tr>
+<tr class="even">
+<td>Multiple seeds for same architecture</td>
+<td>Pearson r &gt; 0.97 between seeds; zero ensemble diversity</td>
+<td>Already known from Phase 1</td>
+</tr>
+<tr class="odd">
+<td>ChEMBL/BindingDB for tabular models</td>
+<td>Always hurt; assay confounding (dargason)</td>
+<td>Filter to primary sources</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="references" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-butina1999" class="csl-entry" role="listitem">
+Butina, Darko. 1999. <span>“Unsupervised Data Base Clustering Based on Daylight’s Fingerprint and Tanimoto Similarity: A Fast and Automated Way to Cluster Small and Large Data Sets.”</span> <em>Journal of Chemical Information and Computer Sciences</em> 39 (4): 747–50.
+</div>
+<div id="ref-hollmann2023tabpfn" class="csl-entry" role="listitem">
+Hollmann, Noah, Samuel Müller, Katharina Eggensperger, and Frank Hutter. 2022. <span>“TabPFN: A Transformer That Solves Small Tabular Classification Problems in a Second.”</span> <em>arXiv Preprint arXiv:2207.01848</em>.
+</div>
+<div id="ref-ke2017" class="csl-entry" role="listitem">
+Ke, Guolin, Qi Meng, Thomas Finley, et al. 2017. <span>“Lightgbm: A Highly Efficient Gradient Boosting Decision Tree.”</span> <em>Advances in Neural Information Processing Systems</em> 30.
+</div>
+<div id="ref-kliewer1998" class="csl-entry" role="listitem">
+<span class="nocase">Kliewer, Steven A, John T Moore, Laura Wade, et al.</span> 1998. <span>“An Orphan Nuclear Receptor Activated by Pregnanes Defines a Novel Steroid Signaling Pathway.”</span> <em>Cell</em> 92 (1): 73–82.
+</div>
+<div id="ref-tabicl2025" class="csl-entry" role="listitem">
+Qu, Jingang, David Holzmüller, Gauthier Menet, Robert Tibshirani, Behnam Neyshabur, and Michal Valko. 2025. <span>“TabICL: In-Context Learning for Tabular Data.”</span> <em>International Conference on Machine Learning</em>.
+</div>
+<div id="ref-watkins2001" class="csl-entry" role="listitem">
+Watkins, R E, G B Wisely, L B Moore, et al. 2001. <span>“The Human Nuclear Xenobiotic Receptor PXR: Structural Determinants of Directed Promiscuity.”</span> <em>Science</em> 292 (5525): 2329–33.
+</div>
+<div id="ref-zhou2023unimol" class="csl-entry" role="listitem">
+Zhou, Gengmo, Zhifeng Gao, Qiankun Ding, et al. 2023. <span>“Uni-Mol: A Universal 3D Molecular Representation Learning Framework.”</span> <em>International Conference on Learning Representations</em>. <a href="https://openreview.net/forum?id=6K2RM6wVqKu">https://openreview.net/forum?id=6K2RM6wVqKu</a>.
+</div>
+</div>
+<hr>
+</section>
+<section id="sec-appendix-subs" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Appendix A: Detailed Submission Analyses</h1>
+<p><em>Per-submission root-cause analyses for the early submissions (1–12). These document the failure modes and diagnostic reasoning that drove the methodology evolution described in the main text.</em></p>
+<hr>
+<section id="submission-1-lightgbm-3.7-recal-first-leaderboard-result" class="level3" data-number="10.0.1">
+<h3 data-number="10.0.1" class="anchored" data-anchor-id="submission-1-lightgbm-3.7-recal-first-leaderboard-result"><span class="header-section-number">10.0.1</span> Submission 1: LightGBM (3.7× recal) — First leaderboard result</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>OOF (CV)</th>
+<th>Leaderboard</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MAE</td>
+<td>0.227</td>
+<td>0.763</td>
+<td>3.4× worse — systematic bias</td>
+</tr>
+<tr class="even">
+<td>RAE</td>
+<td>0.089</td>
+<td>0.958</td>
+<td>Near constant-predictor</td>
+</tr>
+<tr class="odd">
+<td>R²</td>
+<td>0.071</td>
+<td>−0.133</td>
+<td>Absolute values wrong</td>
+</tr>
+<tr class="even">
+<td>Spearman ρ</td>
+<td>0.297</td>
+<td><strong>0.579</strong></td>
+<td>Rank ordering genuinely predictive</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Root cause:</strong> 3.7× recalibration factor derived from training std (0.324) over-spread predictions for the test distribution (implied std ≈ 0.20–0.23). Spearman = 0.579 confirms rank ordering is correct; MAE is dominated by over-spread predictions. The OOF MAE (0.227) reflects the training active dynamic range (2.549 log-units); leaderboard MAE (0.763) reflects the much narrower test dynamic range (0.796 log-units). CV on training data cannot detect this distribution gap.</p>
+<hr>
+</section>
+<section id="submission-2-mmp-delta-baseline" class="level3" data-number="10.0.2">
+<h3 data-number="10.0.2" class="anchored" data-anchor-id="submission-2-mmp-delta-baseline"><span class="header-section-number">10.0.2</span> Submission 2: MMP-delta Baseline</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Sub 1: LGBM</th>
+<th>Sub 2: MMP-delta</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LB MAE</td>
+<td>0.763</td>
+<td>1.353</td>
+<td>+0.590 worse</td>
+</tr>
+<tr class="even">
+<td>LB RAE</td>
+<td>0.958</td>
+<td>1.699</td>
+<td>Worse than constant predictor</td>
+</tr>
+<tr class="odd">
+<td>LB Spearman</td>
+<td>+0.579</td>
+<td><strong>−0.071</strong></td>
+<td>Rank ordering destroyed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Root cause:</strong> Only 9.2% of test compounds have Tanimoto &gt; 0.4 to any training compound. For the 90.8% with distant neighbors, the delta LightGBM predicts essentially random deltas from physicochemical features — destroying rank ordering. MMP-delta is effective only for compounds with high-quality structural neighbors.</p>
+<hr>
+</section>
+<section id="submission-3-lgbm-2.5-recal-calibration-test" class="level3" data-number="10.0.3">
+<h3 data-number="10.0.3" class="anchored" data-anchor-id="submission-3-lgbm-2.5-recal-calibration-test"><span class="header-section-number">10.0.3</span> Submission 3: LGBM (2.5× recal) — Calibration test</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Sub 1 (3.7×)</th>
+<th>Sub 3 (2.5×)</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LB MAE</td>
+<td>0.763</td>
+<td>0.779</td>
+<td><strong>+0.016 worse</strong></td>
+</tr>
+<tr class="even">
+<td>LB Spearman</td>
+<td>0.579</td>
+<td>0.579</td>
+<td>unchanged (expected)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key finding:</strong> Narrowing predictions from std = 0.324 to 0.218 <em>worsened</em> MAE. Disconfirms variance-overcorrection as the dominant error source. The floor for linear recalibration of a tree model with Spearman ≈ 0.579 is MAE ≈ 0.76–0.78. Improving beyond this requires a better model architecture, not recalibration.</p>
+<hr>
+</section>
+<section id="submission-4-chemprop-mpnn-worst-result-mae0.859-rae1.078" class="level3" data-number="10.0.4">
+<h3 data-number="10.0.4" class="anchored" data-anchor-id="submission-4-chemprop-mpnn-worst-result-mae0.859-rae1.078"><span class="header-section-number">10.0.4</span> Submission 4: Chemprop MPNN (worst result — MAE=0.859, RAE=1.078)</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Sub 1: LGBM</th>
+<th>Sub 4: Chemprop (d_h=1200)</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LB MAE</td>
+<td>0.763</td>
+<td><strong>0.859</strong></td>
+<td>+0.096 worse</td>
+</tr>
+<tr class="even">
+<td>LB RAE</td>
+<td>0.958</td>
+<td><strong>1.078</strong></td>
+<td>Worse than constant predictor</td>
+</tr>
+<tr class="odd">
+<td>LB Spearman</td>
+<td>0.579</td>
+<td>0.510</td>
+<td>−0.069</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Three compounding failures:</strong> (1) d_h=1,200 is severely over-parameterized for n=1,067 training compounds per fold; the model collapsed to near-constant predictions (OOF Spearman = 0.205). (2) The 2.5× recalibration factor was calibrated for LGBM’s raw std (0.087); Chemprop’s raw std was 0.138, so 2.5× pushed predicted std to 0.344 — 1.6× too wide. (3) RAE &gt; 1.0 means even a constant predictor would have beaten this submission.</p>
+<p><strong>Lesson:</strong> Always check each model’s raw prediction std before applying a recalibration factor. Never apply a factor calibrated for one model to another.</p>
+<hr>
+</section>
+<section id="submissions-78-ensemble-with-chemprop-mean-offset-error" class="level3" data-number="10.0.5">
+<h3 data-number="10.0.5" class="anchored" data-anchor-id="submissions-78-ensemble-with-chemprop-mean-offset-error"><span class="header-section-number">10.0.5</span> Submissions 7–8: Ensemble with Chemprop; mean-offset error</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Sub 7 (ensemble)</th>
+<th>Sub 8 (+0.2335 offset)</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LB MAE</td>
+<td>0.806</td>
+<td>0.859</td>
+<td><strong>+0.053 worse</strong></td>
+</tr>
+<tr class="even">
+<td>LB Spearman</td>
+<td>0.576</td>
+<td>0.510</td>
+<td><strong>−0.066 worse</strong></td>
+</tr>
+<tr class="odd">
+<td>Rank</td>
+<td>191</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sub 7:</strong> Chemprop (d_h=300 Run 2) still collapses to near-constant predictions (OOF Spearman = 0.212). Even at 26.7% ensemble weight it pulls MAE +0.043 above LGBM-only.</p>
+<p><strong>Sub 8:</strong> R² = −0.234 was misinterpreted as mean bias (predicted mean − true mean) and +0.2335 was added to all predictions. R² is a <em>relative fit metric</em> (variance explained); R² = −0.23 means the model explains −23% of test variance (worse than predicting the mean). It carries no information about the mean prediction level. Adding the offset moved all predictions further from the true distribution, worsening every metric.</p>
+<hr>
+</section>
+<section id="submission-9-full-training-data-biggest-single-improvement" class="level3" data-number="10.0.6">
+<h3 data-number="10.0.6" class="anchored" data-anchor-id="submission-9-full-training-data-biggest-single-improvement"><span class="header-section-number">10.0.6</span> Submission 9: Full training data — biggest single improvement</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Sub 7</th>
+<th>Sub 9</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LB MAE</td>
+<td>0.806</td>
+<td><strong>0.595</strong></td>
+<td><strong>−0.211 (−26%)</strong></td>
+</tr>
+<tr class="even">
+<td>LB RAE</td>
+<td>1.011</td>
+<td><strong>0.749</strong></td>
+<td><strong>−0.262 (−26%)</strong></td>
+</tr>
+<tr class="odd">
+<td>LB R²</td>
+<td>−0.234</td>
+<td><strong>+0.422</strong></td>
+<td><strong>+0.656</strong></td>
+</tr>
+<tr class="even">
+<td>LB Spearman</td>
+<td>0.576</td>
+<td><strong>0.746</strong></td>
+<td><strong>+0.170 (+30%)</strong></td>
+</tr>
+<tr class="odd">
+<td>Rank</td>
+<td>191</td>
+<td><strong>168</strong></td>
+<td><strong>+23 positions</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Root cause of improvement:</strong> (1) Training on all 4,135 compounds (pEC50 1.61–7.55) instead of the 1,334 active-only subset. (2) Chemprop epoch cap (max_epochs=25, patience=8 instead of 100/20) fixed mean-collapse — Run 3 OOF Spearman rose to 0.689 vs.&nbsp;Run 2’s 0.212. The full-data fix alone accounts for most of the improvement.</p>
+<hr>
+</section>
+<section id="submissions-1012-model-zoo-expansion" class="level3" data-number="10.0.7">
+<h3 data-number="10.0.7" class="anchored" data-anchor-id="submissions-1012-model-zoo-expansion"><span class="header-section-number">10.0.7</span> Submissions 10–12: Model zoo expansion</h3>
+<p><strong>Sub 10 (+ECFP6/FCFP4 LGBM variants):</strong> Minor regression (rank 168 → 182). Fingerprint variants are r &gt; 0.99 correlated with existing LGBM — no new information, only noise.</p>
+<p><strong>Sub 11 (+lgbm_chemeleon):</strong> CheMeleon embeddings become dominant model (59% weight). Modest improvement (RAE 0.749 → 0.761) but overspread (2.17× recal clips 26/513 predictions).</p>
+<p><strong>Sub 12 (+chemprop_hts):</strong> HTS-pretrained Chemprop adds 21% blend weight. Single largest model-addition improvement: rank 186 → 141 (+45 positions), RAE 0.761 → 0.692. The MPNN backbone, initialized on 7,238 structurally diverse PXR HTS compounds, provides broad chemical space coverage that the from-scratch Chemprop cannot achieve on n=4,135 alone.</p>
+<hr>
+</section>
+</section>
+<section id="sec-appendix-models" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Appendix B: Supporting Models — Brief Reference</h1>
+<p>Models that received 0% SLSQP blend weight in the final Sub 20 ensemble. All were trained with 5-fold Butina honest OOF; predictions are available in <code>models/&lt;name&gt;/oof_predictions.npy</code>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Script</th>
+<th>Type</th>
+<th>OOF MAE</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>lgbm</td>
+<td><code>06_train_lgbm.py</code></td>
+<td>LightGBM</td>
+<td>0.500</td>
+<td>Fingerprints + Mordred + rdkit2d</td>
+</tr>
+<tr class="even">
+<td>lgbm_chemeleon</td>
+<td><code>06_train_lgbm.py --chemeleon</code></td>
+<td>LightGBM</td>
+<td>0.500</td>
+<td>+ CheMeleon 2048-d embeddings</td>
+</tr>
+<tr class="odd">
+<td>lgbm_optimal</td>
+<td><code>27_train_lgbm_optimal.py</code></td>
+<td>LightGBM</td>
+<td>0.501</td>
+<td>CheMeleon + ECFP4 + rdkit2d (no Mordred)</td>
+</tr>
+<tr class="even">
+<td>chemprop</td>
+<td><code>07_train_chemprop.py</code></td>
+<td>MPNN</td>
+<td>~0.56</td>
+<td>From scratch; d_h=300, 2 heads</td>
+</tr>
+<tr class="odd">
+<td>chemprop_hts</td>
+<td><code>07b_pretrain_chemprop_hts.py</code></td>
+<td>MPNN (HTS-pretrained)</td>
+<td>~0.52</td>
+<td>Pretrained on 7,238 PXR HTS compounds</td>
+</tr>
+<tr class="even">
+<td>knn</td>
+<td><code>06d_train_knn.py</code></td>
+<td>K-NN</td>
+<td>0.695</td>
+<td>ECFP4 Tanimoto, k=5</td>
+</tr>
+<tr class="odd">
+<td>unimol_lgbm</td>
+<td><code>18_train_unimol_lgbm.py</code></td>
+<td>LightGBM</td>
+<td>~0.55</td>
+<td>Frozen UniMol 512-d embeddings</td>
+</tr>
+<tr class="even">
+<td>chemeleon_binary</td>
+<td><code>19_train_chemeleon_binary.py</code></td>
+<td>Classifier (calibrated)</td>
+<td>~0.58</td>
+<td>CheMeleon → binary active/inactive</td>
+</tr>
+<tr class="odd">
+<td>catboost</td>
+<td><code>28_train_catboost.py</code></td>
+<td>CatBoost</td>
+<td>0.505</td>
+<td>PCA-256 features</td>
+</tr>
+<tr class="even">
+<td>tabicl_3d</td>
+<td><code>29_train_tabicl_3d.py</code></td>
+<td>TabICL</td>
+<td>0.518</td>
+<td>+ UniMol 3D embeddings; r&gt;0.99 with tabicl</td>
+</tr>
+<tr class="odd">
+<td>tabicl_chemprop</td>
+<td><code>31_train_tabicl_chemprop.py</code></td>
+<td>TabICL</td>
+<td>0.505</td>
+<td>+ Chemprop-FT; identical to tabicl</td>
+</tr>
+<tr class="even">
+<td>unimol2_s2</td>
+<td><code>25_train_unimol2_s2.py</code></td>
+<td>UniMol fine-tuned</td>
+<td>0.513</td>
+<td>Deterministic duplicate of unimol2</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="sec-appendix" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> Appendix C: Running Decision Log</h1>
+<p><em>Decisions are logged immediately as made. Each entry records what was decided, why, what happened, and what was learned.</em></p>
+<hr>
+<section id="analog-expansion-cv-threshold-tanimoto-0.30" class="level3" data-number="12.0.1">
+<h3 data-number="12.0.1" class="anchored" data-anchor-id="analog-expansion-cv-threshold-tanimoto-0.30"><span class="header-section-number">12.0.1</span> 2026-05-04: Analog-Expansion CV threshold (Tanimoto 0.30)</h3>
+<p><strong>Decision:</strong> Used Butina clustering at Tanimoto threshold 0.30 for leave-one-cluster-out CV.</p>
+<p><strong>Rationale:</strong> OpenADMET constructed the 513-compound test set by selecting Enamine analogs at ECFP4 Tanimoto &gt; 0.4 to the 63 potent training hits. A threshold of 0.30 creates validation folds that are slightly more conservative than the actual test gap (&gt; 0.4), ensuring CV performance is not optimistic relative to the leaderboard. Threshold 0.40 on the n=4,135 dataset produces 1,114 clusters with 87% singletons — nearly equivalent to leave-one-out. Threshold 0.30 produces 617 clusters with 64% singletons and maximum cluster size 35, providing meaningful analog-family grouping.</p>
+<p><strong>Learned:</strong> The Butina algorithm (Taylor-Butina) is a sphere-exclusion clustering method. It picks the compound with the most neighbors as the first centroid, assigns all neighbors to that cluster, removes them from the pool, and repeats. Each compound is within the threshold Tanimoto distance of its cluster centroid. Runs in O(n²) time — manageable for ~5,000 compounds.</p>
+<hr>
+</section>
+<section id="inchikey-14-character-prefix-for-deduplication" class="level3" data-number="12.0.2">
+<h3 data-number="12.0.2" class="anchored" data-anchor-id="inchikey-14-character-prefix-for-deduplication"><span class="header-section-number">12.0.2</span> 2026-05-04: InChIKey 14-character prefix for deduplication</h3>
+<p><strong>Decision:</strong> Deduplicated on the first 14 characters of the InChIKey (connectivity prefix only), not the full 27-character key.</p>
+<p><strong>Rationale:</strong> The InChIKey has three layers: <code>XXXXXXXXXXXXXX-YYYYYYYYYY-Z</code>. The 14-character X block encodes atomic connectivity only. Enamine commercial compounds are typically racemates (undefined stereochemistry); training parents may have defined stereo from literature sources. Using only the connectivity prefix merges these under the same identifier — appropriate because the cell-based luciferase assay does not distinguish enantiomers.</p>
+<p><strong>Learned:</strong> The InChIKey Y block adds stereo and tautomer information; the Z block adds charge state. The X block alone is ideal for cross-source connectivity-based matching.</p>
+<hr>
+</section>
+<section id="loss-function-for-chemprop-mae-over-huber" class="level3" data-number="12.0.3">
+<h3 data-number="12.0.3" class="anchored" data-anchor-id="loss-function-for-chemprop-mae-over-huber"><span class="header-section-number">12.0.3</span> 2026-05-04: Loss function for Chemprop — MAE over Huber</h3>
+<p><strong>Decision:</strong> Used MAE (L1) loss instead of Huber loss for Chemprop training.</p>
+<p><strong>Rationale:</strong> Chemprop v2.2.3 provides <code>-l mae</code> as a built-in option with a learning-rate warm-up schedule that handles early-training instability (the main motivation for Huber). The warm-up schedule is more principled than the Huber approximation: it starts at lr=1e-5, reaches max_lr=1e-3 at epoch 2, and decays to 1e-6. Directly aligning training loss with the evaluation metric (RAE = MAE / dynamic_range) is the cleanest choice.</p>
+<p><strong>Learned:</strong> Always check whether the framework provides the target loss natively before implementing an approximation. The decision log should record what was <em>actually done</em>, not what was originally planned.</p>
+<hr>
+</section>
+<section id="antisymmetric-siamese-constraint-for-mmp-delta-model" class="level3" data-number="12.0.4">
+<h3 data-number="12.0.4" class="anchored" data-anchor-id="antisymmetric-siamese-constraint-for-mmp-delta-model"><span class="header-section-number">12.0.4</span> 2026-05-04: Antisymmetric Siamese constraint for MMP-delta model</h3>
+<p><strong>Decision:</strong> Built an antisymmetric Siamese architecture Δ(A→B) = g(B) − g(A) alongside the vanilla mmpdb baseline.</p>
+<p><strong>Rationale:</strong> Physical constraint: replacing CH₃ with CF₃ and the reverse substitution must produce exactly equal and opposite pEC50 changes. The vanilla delta model learns these directions independently and can violate this. The Siamese construction enforces it by design: Δ(B→A) = g(A) − g(B) = −Δ(A→B). Training data doubles naturally (both A→B and B→A pairs contribute to the same gradient). The linear physics component (<span class="math inline">\(\boldsymbol{\alpha}^\top \boldsymbol{\phi}(X)\)</span>) makes the model interpretable.</p>
+<p><strong>Learned:</strong> “Siamese” refers to the architecture where both branches use the same network with shared weights. The antisymmetry is automatic: once the encoder g(·) is defined, g(B) − g(A) = −(g(A) − g(B)). This is a general principle: if your prediction has a natural antisymmetry, embed it in the parameterization rather than enforcing it as a penalty.</p>
+<hr>
+</section>
+<section id="two-stage-chemprop-training-deferred-to-phase-2" class="level3" data-number="12.0.5">
+<h3 data-number="12.0.5" class="anchored" data-anchor-id="two-stage-chemprop-training-deferred-to-phase-2"><span class="header-section-number">12.0.5</span> 2026-05-04: Two-stage Chemprop training deferred to Phase 2</h3>
+<p><strong>Decision:</strong> Phase 1 trains Chemprop from scratch on Octant primary data. Two-stage training (Stage 1 pretrain on Tox21+NCATS+ChEMBL, Stage 2 fine-tune) was deferred.</p>
+<p><strong>Rationale:</strong> The PubChem API format changed and the auxiliary download pipeline returned unparseable CSV for AID 1347033. Debugging competed with the May 25 deadline. The multitask architecture (3 heads: pEC50 + Emax + weak-label activation) provides richer training signal than a single-task baseline from scratch.</p>
+<p><strong>Learned:</strong> Transfer learning in cheminformatics follows NLP principles: pretrain broad, fine-tune specific. The key practical constraint: the auxiliary data pipeline must work before you build the architecture around it. For Phase 2, two-stage training is the first lever to try if OOF Pearson r &lt; 0.40.</p>
+<hr>
+</section>
+<section id="stack-modernization-numpy2.0-constraint-removed" class="level3" data-number="12.0.6">
+<h3 data-number="12.0.6" class="anchored" data-anchor-id="stack-modernization-numpy2.0-constraint-removed"><span class="header-section-number">12.0.6</span> 2026-05-04: Stack modernization — numpy&lt;2.0 constraint removed</h3>
+<p><strong>Decision:</strong> Removed <code>numpy&lt;2.0</code> from <code>pyproject.toml</code>, upgraded to NumPy 2.4.4. Updated all deprecated RDKit fingerprint API calls (<code>AllChem.GetMorganFingerprintAsBitVect()</code> → <code>rdFingerprintGenerator.GetMorganGenerator().GetFingerprint()</code>).</p>
+<p><strong>Rationale:</strong> The <code>numpy&lt;2.0</code> constraint dates to Chemprop 2.0.x (mid-2024), which broke on NumPy 2.x due to removal of deprecated C-level aliases (<code>np.bool</code>, <code>np.int</code>, <code>np.float</code>). By Chemprop 2.2.3, the incompatibilities are resolved. RDKit 2024.09+ formally supports NumPy 2.x. All 23 unit tests pass on NumPy 2.4.4. Note: “TabPFN v2” ships as version 7.x on PyPI — the name and version are not synchronized.</p>
+<p><strong>Learned:</strong> Dependency constraints have an expiration date. The right method to evaluate stale constraints: (1) check <code>importlib.metadata.requires()</code> for downstream ceilings, (2) <code>pip install --dry-run</code> for solver conflicts, (3) install and run tests. A constraint that was correct for Chemprop 2.0.x became maintenance liability by 2.2.x.</p>
+<hr>
+</section>
+<section id="eda-driven-architecture-revisions-counter-screen-and-chemprop-heads" class="level3" data-number="12.0.7">
+<h3 data-number="12.0.7" class="anchored" data-anchor-id="eda-driven-architecture-revisions-counter-screen-and-chemprop-heads"><span class="header-section-number">12.0.7</span> 2026-05-04: EDA-driven architecture revisions (counter-screen and Chemprop heads)</h3>
+<p><strong>Decision:</strong> Chemprop multitask architecture revised from 4 heads to 2 heads. Counter-screen pEC50 removed as a regression target.</p>
+<p><strong>Rationale:</strong> Counter-screen r² = 0.012 (n=2,647 paired compounds). Adding it as a regression head means the shared MPNN backbone must simultaneously explain primary pEC50 AND a variable 98.8% orthogonal to it — actively degrading the backbone representation. In multitask learning, adding a target with r &lt; 0.3 to the primary target typically hurts rather than helps because the shared layers must compromise between contradictory objectives.</p>
+<p><strong>Learned:</strong> Always compute cross-target correlation before adding a task. If r &lt; 0.3, the task is likely to degrade the primary head. EDA must precede architecture decisions.</p>
+<hr>
+</section>
+<section id="rdkit-api-compatibility-fix-removestereochemistry" class="level3" data-number="12.0.8">
+<h3 data-number="12.0.8" class="anchored" data-anchor-id="rdkit-api-compatibility-fix-removestereochemistry"><span class="header-section-number">12.0.8</span> 2026-05-04: RDKit API compatibility fix — RemoveStereoChemistry</h3>
+<p><strong>Decision:</strong> Replaced <code>Chem.RemoveStereoChemistry(mol)</code> with <code>Chem.MolToSmiles(mol, canonical=True, isomericSmiles=False)</code> to strip stereochemistry.</p>
+<p><strong>Rationale:</strong> <code>Chem.RemoveStereoChemistry</code> was moved to <code>rdkit.Chem.rdmolops</code> in RDKit 2024.09+. <code>isomericSmiles=False</code> achieves the same effect at SMILES generation time without mutating the Mol object (cleaner API practice — the Mol retains stereochemistry internally for other purposes).</p>
+<p><strong>Learned:</strong> RDKit API names are not stable across major releases. Functions move between modules (<code>Chem</code>, <code>Chem.rdmolops</code>, <code>AllChem</code>). Prefer immutable operations (generate new output with a flag) over in-place Mol mutations — safer across API versions.</p>
+<hr>
+</section>
+<section id="lightgbm-baseline-first-oof-rae-number" class="level3" data-number="12.0.9">
+<h3 data-number="12.0.9" class="anchored" data-anchor-id="lightgbm-baseline-first-oof-rae-number"><span class="header-section-number">12.0.9</span> 2026-05-04: LightGBM baseline — first OOF RAE number</h3>
+<p><strong>Decision:</strong> Trained LightGBM ensemble (25 models: 5 folds × 5 seeds) on 4,131 features. Result: OOF MAE = 0.230, OOF RAE = 0.090.</p>
+<p><strong>Rationale:</strong> LightGBM is the first model because it trains in minutes on CPU, handles high-dimensional tabular features natively, and provides immediate pipeline health feedback. OOF RAE above 0.30 would indicate a bug; 0.090 confirms the pipeline is healthy.</p>
+<p><strong>Learned:</strong> Per-fold RAE variance (0.095–0.166) is larger than the mean suggests. Some folds are structurally “hard” (singleton scaffolds with no training neighbors). Look at the per-fold distribution, not just the mean. A model with mean RAE = 0.090 but fold-4 RAE = 0.166 tells you something structurally unique about fold 4 — actionable for active learning.</p>
+<hr>
+</section>
+<section id="variance-compression-diagnosis-and-model-refinement" class="level3" data-number="12.0.10">
+<h3 data-number="12.0.10" class="anchored" data-anchor-id="variance-compression-diagnosis-and-model-refinement"><span class="header-section-number">12.0.10</span> 2026-05-04: Variance compression diagnosis and model refinement</h3>
+<p><strong>Decision:</strong> Diagnosed variance compression (test pred std = 0.076 vs.&nbsp;training active std = 0.324; factor = 3.7×). Implemented five refinements: (1) Butina threshold 0.40 → 0.30; (2) VarianceThreshold(0.01) feature filter (4,131 → 2,871 features); (3) LightGBM regularization (lambda_l1=0.1, lambda_l2=0.05, path_smooth=1.0); (4) num_leaves 127 → 63, min_child_samples 10 → 25; (5) post-hoc dynamic variance recalibration.</p>
+<p><strong>Rationale:</strong> OOF Pearson r = 0.321 (R² = 0.076) — the model explains less than 10% of training pEC50 variance in LOCO-CV. It predicts near the global mean for almost every compound. Causes: (a) no regularization enabling memorization of training clusters; (b) 87% singleton clusters at 0.40 making CV nearly LOOCV; (c) num_leaves=127 too complex for n=1,334; (d) 1,260 near-zero-variance features adding noise. <code>path_smooth=1.0</code> smooths each leaf’s output toward its parent node — LightGBM’s direct lever against variance compression on OOD compounds.</p>
+<p><strong>Learned:</strong> OOF RAE can be misleading: a near-constant predictor achieves OOF RAE ≈ 0.10 on the training active set (dynamic range = 2.549, mean-predictor MAE ≈ 0.26). Always check OOF Pearson r alongside RAE. Variance compression in GBDT on OOD chemical space is fundamental, not just a hyperparameter artifact — the recalibration step is essential.</p>
+<hr>
+</section>
+<section id="first-leaderboard-submission-rae0.958-reveals-distribution-shift" class="level3" data-number="12.0.11">
+<h3 data-number="12.0.11" class="anchored" data-anchor-id="first-leaderboard-submission-rae0.958-reveals-distribution-shift"><span class="header-section-number">12.0.11</span> 2026-05-04: First leaderboard submission — RAE=0.958 reveals distribution shift</h3>
+<p><strong>Decision:</strong> After Sub 1 (MAE=0.763, RAE=0.958, Spearman=0.579), identified systematic over-spread as root cause.</p>
+<p><strong>Rationale:</strong> Spearman = 0.579 confirms correct rank ordering — the model knows which analogs are more active relative to each other. R² &lt; 0 and RAE ≈ 1.0 indicate incorrect absolute scale. Our predictions are centered at mean = 5.33 (training active mean) but the test analogs of 63 potent parents are likely centered near pEC50 = 5.8–6.2. The 3.7× recalibration factor derived from training active std (0.324) massively overshoots the test std (≈ 0.20–0.23).</p>
+<p><strong>Learned:</strong> CV MAE/RAE alone is insufficient to detect distribution shift. For lead-optimization challenges, the test mean is likely higher than the training mean. A high Spearman with low R² is the diagnostic signature of a calibration failure, not a model failure. Use MAE/RAE from the leaderboard to infer test std: test_std ≈ (LB_MAE / LB_RAE) / 3.5.</p>
+<hr>
+</section>
+<section id="mmp-delta-leaderboard-result-coverage-too-low" class="level3" data-number="12.0.12">
+<h3 data-number="12.0.12" class="anchored" data-anchor-id="mmp-delta-leaderboard-result-coverage-too-low"><span class="header-section-number">12.0.12</span> 2026-05-05: MMP-delta leaderboard result — coverage too low</h3>
+<p><strong>Decision:</strong> After Sub 2 (MAE=1.353, Spearman=−0.071), removed MMP-delta from ensemble with zero global weight.</p>
+<p><strong>Rationale:</strong> 90.8% of test compounds have Tanimoto &lt; 0.4 to any training compound. For these distant-neighbor pairs, physicochemical delta features carry no SAR signal — the delta LightGBM predicts random noise. Spearman = −0.071 means the predictions actively scramble rank order.</p>
+<p><strong>Learned:</strong> MMP-delta is a high-precision, low-coverage model. At 9.2% coverage, it cannot be a primary predictor. The architecture is correct <em>for the compounds it covers</em>; the failure is structural. For Phase 2, when Phase 1 analog labels are confirmed, MMP-delta anchored directly to the 63 parent compounds would have much higher coverage and could contribute.</p>
+<hr>
+</section>
+<section id="chemprop-v2-cli-crash-on-windows-rewritten-to-python-api" class="level3" data-number="12.0.13">
+<h3 data-number="12.0.13" class="anchored" data-anchor-id="chemprop-v2-cli-crash-on-windows-rewritten-to-python-api"><span class="header-section-number">12.0.13</span> 2026-05-06: Chemprop v2 CLI crash on Windows — rewritten to Python API</h3>
+<p><strong>Decision:</strong> Replaced subprocess CLI calls with the chemprop Python API (<code>MoleculeDataset</code>, <code>MPNN</code>, <code>pl.Trainer</code>).</p>
+<p><strong>Rationale:</strong> The Chemprop v2 CLI crashes on Windows with exit code 0xC0000005 (STATUS_ACCESS_VIOLATION) when invoked via <code>subprocess.run()</code>. The crash occurs inside <code>pd.read_csv()</code> in <code>validate_train_args()</code> — a subprocess context where C extensions (pandas, PyTorch, RDKit) share memory layout assumptions that fail in a spawned process. The Python API calls the same code directly without process spawning.</p>
+<p><strong>Learned:</strong> On Windows, <code>subprocess.run()</code> spawns new processes (not forks). C extensions re-imported in the spawned interpreter can violate memory layout assumptions that worked in the main process. Use the library’s Python API directly when available.</p>
+<hr>
+</section>
+<section id="sub-78-leaderboard-results-root-cause-active-only-training-data" class="level3" data-number="12.0.14">
+<h3 data-number="12.0.14" class="anchored" data-anchor-id="sub-78-leaderboard-results-root-cause-active-only-training-data"><span class="header-section-number">12.0.14</span> 2026-05-06: Sub 7/8 leaderboard results — root cause: active-only training data</h3>
+<p><strong>Decision:</strong> After Sub 7 (rank 191, RAE=1.011) and Sub 8 (mean-offset error, RAE=1.078), identified the critical data coverage bug: training on 1,334 active-only compounds instead of 4,135 total.</p>
+<p><strong>Root cause:</strong> <code>scripts/02_curate_data.py</code> filtered <code>is_censored = (pec50_median &lt; 5.0)</code> and all subsequent scripts loaded <code>master_train_active.parquet</code> (n=1,334). The competition provides 4,139 total compounds spanning pEC50 1.61–7.55. The reference rank-42 team uses all 4,139 compounds. Test analogs span the full activity range — a model that has never seen pEC50 &lt; 5.0 during training cannot predict below-threshold analogs.</p>
+<p><strong>Corrective actions:</strong> Modified <code>04_build_features.py</code> and <code>05_build_cv_splits.py</code> to load <code>master_train.parquet</code> (n=4,135). Rebuilt CV splits: 4,135 compounds → 5 balanced Butina folds of 827 each. Rebuilt feature matrix: <code>train_features_all.npy</code> now (4135, 4131).</p>
+<p><strong>Learned:</strong> When filtering training data on biological relevance criteria, verify the test set doesn’t contain compounds in the excluded range. For hit-expansion benchmarks, analogs of potent compounds span the full activity spectrum. “Include all measured pEC50 values” is the safe default.</p>
+<hr>
+</section>
+<section id="phase-1-corrective-fixes-traintest-parity-ensemble-recal-honest-stacker" class="level3" data-number="12.0.15">
+<h3 data-number="12.0.15" class="anchored" data-anchor-id="phase-1-corrective-fixes-traintest-parity-ensemble-recal-honest-stacker"><span class="header-section-number">12.0.15</span> 2026-05-07: Phase 1 corrective fixes — train/test parity, ensemble recal, honest stacker</h3>
+<p><strong>Decision:</strong> Code review surfaced multiple correctness bugs. Nine fixes applied simultaneously.</p>
+<p><strong>Bugs found:</strong></p>
+<ol type="1">
+<li><strong>Train/test SMILES parity</strong> (<code>04_build_features.py</code>): training features computed on <code>smiles_std</code> (post-standardization) while test features used raw <code>smiles</code>. Every fingerprint and descriptor seen at test came from a slightly different molecule.</li>
+<li><strong>Descriptor imputation parity</strong> (<code>src/openadmet/features/descriptors.py</code>): NaN imputation used train medians for train and test medians for test separately. Leakage fix: fit medians on train fold, apply to test.</li>
+<li><strong>MMP pipeline still active-only</strong> (<code>08_build_mmps.py:25</code>): loaded <code>master_train_active.parquet</code> after main pipeline switched to full data.</li>
+<li><strong>Hard-coded recalibration</strong> (<code>11_ensemble.py</code>): fixed 2.5× factor from n=1,334 LGBM era; does not transfer across models or dataset sizes.</li>
+<li><strong>Optimistic stacker selection</strong> (<code>stack.py</code>): <code>RidgeCV.fit(X_meta, y_true)</code> then <code>predict_stack(ridge, oof_preds)</code> evaluated on the same rows — a training-set fit, not OOF.</li>
+<li><strong>Stale Chemprop task</strong> (<code>configs/chemprop.yaml</code>): listed <code>primary_activation_33um</code> (not in training parquet); silently dropped at runtime.</li>
+<li><strong>OOF RAE used training dynamic range</strong> (<code>cv/oof.py</code>): training DR ≈ 5.94, test DR ≈ 0.80; reported OOF RAE was 7× more optimistic than leaderboard.</li>
+<li><strong>CV threshold 0.30 artifact</strong>: workaround for n=1,334 singleton problem; no longer needed at n=4,135.</li>
+<li><strong>LGBM hyperparameters tuned for n=1,334</strong>: over-regularized for n=4,135.</li>
+</ol>
+<p><strong>Learned:</strong> Fingerprints, descriptors, and imputation statistics belong to a single train/test consistency contract. Treat violations the same as a database schema mismatch — fail loudly. Hyperparameters carry an implicit “tuned at n=N” tag that becomes stale when dataset size changes.</p>
+<hr>
+</section>
+<section id="submission-discipline-pre-flight-gate-scripts" class="level3" data-number="12.0.16">
+<h3 data-number="12.0.16" class="anchored" data-anchor-id="submission-discipline-pre-flight-gate-scripts"><span class="header-section-number">12.0.16</span> 2026-05-09: Submission discipline — pre-flight gate scripts</h3>
+<p><strong>Decision:</strong> Added <code>scripts/15_check_submission_readiness.py</code> and <code>scripts/14_compare_candidates.py</code>. Added multi-model guard to <code>scripts/11_ensemble.py</code>.</p>
+<p><strong>Rationale:</strong> After a misaligned Chemprop OOF (wrong length) silently produced an LGBM-only “ensemble”, the pipeline needed explicit gatekeeping. The guard: if fewer than 2 base models are loaded, <code>ensemble_recal.csv</code> is not written.</p>
+<p><strong>Learned:</strong> Automated pre-flight checks pay disproportionately in competition settings where submission quota is limited. The “ready to submit” signal should be computed by code, not by inspecting log files.</p>
+<hr>
+</section>
+<section id="chemprop-run-3-epoch-cap-resolves-mean-collapse" class="level3" data-number="12.0.17">
+<h3 data-number="12.0.17" class="anchored" data-anchor-id="chemprop-run-3-epoch-cap-resolves-mean-collapse"><span class="header-section-number">12.0.17</span> 2026-05-13: Chemprop Run 3 — epoch cap resolves mean-collapse</h3>
+<p><strong>Decision:</strong> Changed <code>max_epochs=100, patience=20</code> to <code>max_epochs=25, patience=8</code>. Run 3 result: OOF Spearman = 0.689, MAE = 0.548 — no mean-collapse.</p>
+<p><strong>Root cause of collapse in Runs 1–2:</strong> Under Butina CV, validation compounds are structurally dissimilar to training compounds (by design). An expressive MPNN facing repeated “never seen this scaffold” compounds will, under MAE loss, converge to the training-set mean as the minimum-loss safe prediction. With patience=20 and 100 max epochs, the model discovers the mean predictor and saves it as the “best checkpoint.” Setting max_epochs=25, patience=8 terminates training while the model is still in the signal-rich regime before collapse.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Run 1</th>
+<th>Run 2</th>
+<th>Run 3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>d_h</td>
+<td>1200</td>
+<td>300</td>
+<td>300</td>
+</tr>
+<tr class="even">
+<td>max_epochs</td>
+<td>100</td>
+<td>100</td>
+<td><strong>25</strong></td>
+</tr>
+<tr class="odd">
+<td>patience</td>
+<td>20</td>
+<td>20</td>
+<td><strong>8</strong></td>
+</tr>
+<tr class="even">
+<td>OOF Spearman</td>
+<td>0.205</td>
+<td>0.212</td>
+<td><strong>0.689</strong></td>
+</tr>
+<tr class="odd">
+<td>Collapsed?</td>
+<td>Yes</td>
+<td>Yes</td>
+<td><strong>No</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Learned:</strong> For MPNN on Butina CV, mean-collapse is a training schedule problem, not an architecture size problem. The minimum-loss solution under structural OOD is the training mean. Early stopping before the model finds this solution is the practical fix. The higher OOF MAE of Run 3 (0.548 vs.&nbsp;0.230) is not a regression — it reflects genuine spread predictions, not near-constant output.</p>
+<hr>
+</section>
+<section id="unimol_tools-full-determinism-lr-change-as-diversity-mechanism" class="level3" data-number="12.0.18">
+<h3 data-number="12.0.18" class="anchored" data-anchor-id="unimol_tools-full-determinism-lr-change-as-diversity-mechanism"><span class="header-section-number">12.0.18</span> 2026-05-22: unimol_tools full determinism — LR change as diversity mechanism</h3>
+<p><strong>Decision:</strong> Discovered that <code>unimol_tools</code> training is fully deterministic — two runs with identical hyperparameters produce bit-identical OOF predictions (Pearson r = 1.000, max_diff = 0.0). The <code>unimol2_s2</code> run (intended as a diverse ensemble member) was a complete duplicate of <code>unimol2</code>. Changed learning rate to 2×10⁻⁴ for <code>unimol2_s3</code> to obtain genuine diversity.</p>
+<p><strong>Evidence:</strong> <code>numpy.testing.assert_array_equal(oof_s1, oof_s2)</code> passes. There is no exposed <code>seed</code>, <code>random_state</code>, or <code>random_seed</code> parameter in <code>MolTrain()</code>. Internally, <code>unimol_tools</code> sets a global seed at import time from a fixed value.</p>
+<p><strong>Fix:</strong> <code>learning_rate=2e-4</code> (4× higher than standard 5e-5) changes the optimization trajectory through the 84M-parameter weight space. <code>unimol2_s3</code> Pearson r = 0.941 with <code>unimol2</code> (vs.&nbsp;r = 1.000 for <code>s2</code>). Max prediction difference = 1.64 pEC50 units, mean = 0.25 pEC50 units.</p>
+<p><strong>Learned:</strong> Full determinism in deep learning frameworks is rare and easy to miss. The symptom is an ensemble member receiving identical weight to an existing member (SLSQP splits weight equally between identical predictions). The test: compute <code>pearsonr(oof_1, oof_2)</code> — r = 1.000 confirms duplication. The fix: any hyperparameter change that alters the optimization path (learning rate, batch size, number of epochs) will generate genuine diversity.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,11 @@
+{
+  "center_x": -2.795,
+  "center_y": -0.789,
+  "center_z": 24.304,
+  "size_x": 28.0,
+  "size_y": 28.0,
+  "size_z": 28.0,
+  "receptor_pdb_id": "2QD9",
+  "receptor_description": "T0901317 analog (LGF), 2.0 \u00c5, full agonist",
+  "ligand_resname": "LGF"
+}

@@ -1,0 +1,70 @@
+# Sensitive connection configs — never commit real values
+.env*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.eggs/
+
+# Data — intermediate/large files not needed on GPU machine
+# data/raw/ and data/splits/ are intentionally tracked (small parquets, needed for Chemprop)
+data/curated/
+data/features/
+data/mmps/
+data/docking/poses/
+data/docking/ligands/
+
+# Model artifacts — exclude large regenerable files; keep small .npy prediction arrays
+# .npy files (OOF + test predictions) are tracked and needed for the ensemble
+/models/**/*.pt
+/models/**/*.pth
+/models/**/*.ckpt
+/models/**/*booster*.txt
+/models/**/*.pkl
+
+# Submissions — ignore by default; manuscript-linked CSVs in phase1 are versioned
+submissions/*
+!submissions/phase1/
+submissions/phase1/*
+!submissions/phase1/*.csv
+# Phase 2 final deliverable + runbook are versioned
+!submissions/phase2/
+submissions/phase2/*
+!submissions/phase2/final_submission.csv
+!submissions/phase2/ensemble_raw.csv
+!submissions/phase2/REPRODUCE.md
+
+# Training logs and temporary checkpoint dirs
+logs/
+checkpoints/
+
+# Secrets
+.env
+
+# Claude Code local memory (project-specific assistant context)
+.claude/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# W&B
+wandb/
+
+# OS
+.DS_Store
+
+
+# Pytest / coverage
+.coverage
+.pytest_cache/
+
+# CatBoost training logs
+catboost_info/
+
+# uv
+uv.lock

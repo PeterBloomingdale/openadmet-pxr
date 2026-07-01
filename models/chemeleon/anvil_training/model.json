@@ -1,0 +1,23 @@
+{
+  "n_tasks": 1,
+  "messages": "bond",
+  "aggregation": "norm",
+  "depth": 4,
+  "message_hidden_dim": 2048,
+  "ffn_hidden_dim": 1024,
+  "ffn_num_layers": 1,
+  "normalized_targets": true,
+  "batch_norm": true,
+  "dropout": 0.2,
+  "from_chemeleon": true,
+  "monitor_metric": "val_loss",
+  "metric_list": [
+    "mse",
+    "mae",
+    "rmse"
+  ],
+  "warmup_epochs": 2,
+  "init_lr": 0.0001,
+  "max_lr": 0.001,
+  "final_lr": 0.0001
+}

@@ -1,0 +1,37 @@
+model_type: chemprop_v2_4task
+
+# 4-task multitask configuration following discoverybytes: +0.070 RAE advantage over 2-task.
+# Tasks: pEC50 (primary) + PXR-null counter-assay + single-concentration screen + emax.
+# CheMeleon pretrained initialization: largest single gain (RAE ~0.62 → 0.59).
+
+tasks:
+  - name: pec50_median              # PRIMARY — competition target
+    weight: 1.0
+  - name: counter_pec50             # PXR-null counter-screen (anti-leakage task)
+    weight: 0.5
+  - name: primary_activation_10um   # Single-concentration screen (10 µM) — weak label
+    weight: 0.3
+  - name: primary_activation_33um   # Single-concentration screen (33 µM) — weak label
+    weight: 0.2
+  # Note: emax included via counter_pec50 signal; FXR requires external download (future)
+
+architecture:
+  hidden_size: 2048   # Match CheMeleon pretrained weights (d_h=2048 in checkpoint)
+  depth: 3
+  dropout: 0.3
+  aggregation: mean
+
+training:
+  max_epochs: 25
+  patience: 8
+  batch_size: 32
+  learning_rate: 1.0e-3             # max_lr; init=1e-5, final=1e-6 (cosine schedule)
+  n_folds: 5
+  n_seeds: 3                        # Fewer seeds than base chemprop (CheMeleon init is stable)
+
+pretrain:
+  # CheMeleon pretrained weights from openadmet/pxr-chemeleon-baseline on HuggingFace.
+  # Download: huggingface.co/openadmet/pxr-chemeleon-baseline → model.pth
+  # discoverybytes: CheMeleon init was the single largest improvement (RAE 0.62→0.59).
+  chemeleon_checkpoint: models/chemeleon/anvil_training/model.pth
+  freeze_encoder: false             # Fine-tune entire backbone (not just head)

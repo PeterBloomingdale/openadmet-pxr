@@ -1,0 +1,81 @@
+data:
+  anvil_dir: file:///data1/choderaj/openadmet/skunkworks/202510_model_release/pxr/chemeleon/chemprop
+  cat_entry: null
+  dropna: false
+  input_col: OPENADMET_SMILES
+  resource: ChEMBL_EC50_PXR_CHEMBL3401_aggregated.parquet
+  target_cols:
+  - pchembl_value_mean
+  test_resource: null
+  train_resource: null
+  type: intake
+  val_resource: null
+metadata:
+  authors: Cynthia Xu
+  biotargets:
+  - CYP3A4
+  build_number: 0
+  description: basic regression using a ChemProp multitask task model
+  driver: pytorch
+  email: cynthia.xu@omsf.io
+  name: chemprop_pchembl
+  tag: chemprop-chembl
+  tags:
+  - openadmet
+  - test
+  version: v1
+procedure:
+  ensemble: null
+  feat:
+    params:
+      batch_size: 128
+      n_jobs: 4
+      normalize_targets: true
+    type: ChemPropFeaturizer
+  model:
+    freeze_weights: null
+    param_path: null
+    params:
+      batch_norm: true
+      depth: 4
+      dropout: 0.2
+      ffn_hidden_dim: 1024
+      ffn_hidden_num_layers: 4
+      from_chemeleon: true
+      n_tasks: 1
+    serial_path: null
+    type: ChemPropModel
+  split:
+    params:
+      random_state: 42
+      test_size: 0
+      train_size: 1.0
+      val_size: 0
+    type: ShuffleSplitter
+  train:
+    params:
+      accelerator: gpu
+      early_stopping: true
+      early_stopping_min_delta: 0.001
+      early_stopping_mode: min
+      early_stopping_patience: 10
+      max_epochs: 50
+      monitor_metric: val_loss
+      use_wandb: false
+      wandb_project: demos
+    type: LightningTrainer
+  transform: null
+report:
+  eval:
+  - params: {}
+    type: RegressionMetrics
+  - params:
+      axes_labels:
+      - True LogAC50
+      - Predicted LogAC50
+      n_repeats: 5
+      n_splits: 5
+      pXC50: true
+      random_state: 42
+      title: True vs Predicted LogAC50 on test set
+    type: PytorchLightningRepeatedKFoldCrossValidation

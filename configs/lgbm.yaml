@@ -1,0 +1,30 @@
+model_type: lgbm
+
+features:
+  fingerprints: [morgan_count, avalon, erg]
+  morgan_n_bits: 2048
+  avalon_n_bits: 1024
+  descriptors: [rdkit_2d, mordred_filtered]
+
+training:
+  n_folds: 5
+  n_seeds: 5
+  butina_threshold: 0.40           # restored to 0.40 — matches test-set construction (Tanimoto > 0.4 to parents)
+
+params:
+  objective: regression_l1        # MAE objective — aligns with RAE competition metric
+  metric: mae
+  num_leaves: 127                 # n=4,135 → ~n/30; was 63 from the deprecated n=1,334 era
+  learning_rate: 0.02
+  feature_fraction: 0.5           # 0.5 forces feature diversity in a 4,000-feature matrix
+  bagging_fraction: 0.8
+  bagging_freq: 1
+  min_child_samples: 15           # was 25 (over-regularized for n=1,334); 15 lets leaves capture rarer scaffolds
+  n_estimators: 3000
+  early_stopping_rounds: 100
+  lambda_l1: 0.1                  # L1 regularization — critical for high-dim feature matrix
+  lambda_l2: 0.05                 # L2 regularization
+  path_smooth: 0.2                # was 1.0 — that aggressive smoothing was a remedy for variance compression at small n; with n=4,135 it now suppresses real signal
+  verbose: -1
+  n_jobs: -1
+  device: cpu                      # Set to "gpu" if CUDA available

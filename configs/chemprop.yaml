@@ -1,0 +1,41 @@
+model_type: chemprop_v2
+
+tasks:
+  - name: pec50_median              # PRIMARY — competition target
+    weight: 1.0
+  - name: emax                      # Emax (log2FC vs baseline) — moderate correlation with pEC50
+    weight: 0.4
+  # Removed: primary_activation_33um — column not present in master_train.parquet,
+  #          previously was silently dropped at runtime (see filter in scripts/07_train_chemprop.py).
+  # Removed: counter_pec50 (r²=0.012 with pEC50 per EDA — degrades shared backbone)
+  # Removed: hill_slope (not independently fit in Octant assay — collapses to noise)
+
+architecture:
+  # message_hidden_dim / ffn_hidden_dim in chemprop v2 CLI terms
+  # Run 1 (d_h=1200) → 13.5M params for n=1,334 → collapsed to mean (OOF Spearman=0.205)
+  # Run 2: d_h=300 → ~1.2M params, well-matched to n=1,067 train/fold
+  hidden_size: 300
+  depth: 3
+  dropout: 0.3
+  aggregation: mean
+
+training:
+  # Run 2 (max_epochs=100, patience=20) collapsed to mean predictor by epoch ~30–40 on Butina folds
+  # (OOF Spearman=0.21). Quick mode (12 epochs) gave Spearman=0.52 — the model captures ranking
+  # signal early then degrades. Capping at 25 epochs + patience=8 freezes the best checkpoint
+  # before collapse while still running the full 5-seed ensemble.
+  max_epochs: 25
+  patience: 8
+  batch_size: 32
+  learning_rate: 1.0e-3             # max_lr; init=1e-5, final=1e-6 (cosine schedule)
+  n_folds: 5
+  n_seeds: 5
+
+pretrain:
+  # The downloaded checkpoint (models/chemeleon/anvil_training/model.pth) is an
+  # OpenADMET Anvil single-task ChEMBL model — the README warns it's a weak baseline.
+  # openadmet-models (Anvil framework) is not installed in this env.
+  # Strategy: train multi-task Chemprop from scratch (pec50 + emax + primary_activation).
+  # This multi-task setup provides more signal than fine-tuning from a single-task ChEMBL model.
+  chemeleon_checkpoint: null        # Set to models/chemeleon/anvil_training/model.pth to try --from-foundation
+  freeze_encoder: false

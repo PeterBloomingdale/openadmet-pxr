@@ -1,0 +1,84 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "openadmet"
+version = "0.1.0"
+description = "OpenADMET PXR Blind Challenge — Activity Prediction"
+requires-python = ">=3.11"
+dependencies = [
+    # Chemistry core — rdkit is pip-installable since 2023; 2024.09+ required for numpy 2.x
+    "rdkit>=2024.9.0",
+    "datamol>=0.12.4",
+    "mordredcommunity>=2.0.6",      # maintained fork of mordred
+    "mmpdb>=2.2",
+
+    # ML core
+    "lightgbm>=4.3.0",
+    "scikit-learn>=1.5.0",
+    "numpy>=2.0",                    # 2.x fully supported by rdkit 2024.09+, chemprop 2.2+, lgbm 4.x
+    "pandas>=2.2.0",
+    "scipy>=1.13.0",
+
+    # Deep learning (Chemprop v2 multitask + CheMeleon)
+    "torch>=2.3.0",
+    "chemprop>=2.2.0",               # 2.2+ resolves numpy 2.x ABI issues
+    "lightning>=2.3.0",
+
+    # TabPFN v2 in-context regressor (7.x is the current release of TabPFN v2)
+    "tabpfn>=7.0.0",
+
+    # Data sources
+    "datasets>=2.20.0",             # HuggingFace datasets
+    "chembl-webresource-client>=0.10.9",
+    "requests>=2.32.0",
+
+    # Calibration / uncertainty quantification
+    "mapie>=0.8.6",
+
+    # Experiment tracking
+    "wandb>=0.17.0",
+
+    # Utilities
+    "pydantic>=2.7.0",
+    "pyyaml>=6.0.1",
+    "joblib>=1.4.2",
+    "tqdm>=4.66.0",
+    "loguru>=0.7.2",
+    "python-dotenv>=1.0.1",
+
+    # Visualization
+    "matplotlib>=3.9.0",
+    "seaborn>=0.13.2",
+    "plotly>=5.22.0",
+
+    # Notebooks
+    "jupyter>=1.0.0",
+    "ipykernel>=6.29.0",
+
+    # Arrow/Parquet I/O
+    "pyarrow>=16.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.4.7",
+    "mypy>=1.10.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/openadmet"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=openadmet --cov-report=term-missing -v"

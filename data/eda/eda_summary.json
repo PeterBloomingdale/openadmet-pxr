@@ -1,0 +1,41 @@
+{
+  "q1_noise_floor": {
+    "median_spread": 0.3,
+    "mean_spread": 0.3,
+    "p90_spread": 0.3,
+    "n_compounds_with_replicates": 1,
+    "estimated_achievable_rae": 0.09999999999999999
+  },
+  "q2_test_train_similarity": {
+    "median_max_sim": 0.3132530120481928,
+    "mean_max_sim": 0.3247623519520654,
+    "frac_above_0.4": 0.09161793372319688,
+    "frac_above_0.6": 0.003898635477582846,
+    "frac_above_0.8": 0.0
+  },
+  "q3_censored_fraction": {
+    "n_censored": 2803,
+    "n_total": 4139,
+    "frac_censored": 0.6772167190142546,
+    "pec50_distribution": {
+      "min": 1.61,
+      "p10": 2.49,
+      "median": 4.65,
+      "p90": 5.46,
+      "max": 7.54855421686747,
+      "dynamic_range": 5.93855421686747
+    }
+  },
+  "q4_counterscreen_correlation": {
+    "r2": 0.011640421389916562,
+    "n_both": 2647,
+    "recommendation": "WEAK: counter-screen mostly noise \u2014 use as filter, not regression head"
+  },
+  "q5_stereochemistry": {
+    "train_frac_with_stereo": 0.10606426673109447,
+    "test_frac_with_stereo": 0.042884990253411304,
+    "train_mean_stereocenters": 0.2321816863976806,
+    "test_mean_stereocenters": 0.056530214424951264,
+    "recommendation": "STRIP STEREO"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "catboost": 0.03189238709808315,
+  "chemeleon_binary": 0.00708260650525061,
+  "chemprop": 0.0,
+  "chemprop_hts": 0.0,
+  "knn": 0.023054636181725607,
+  "lgbm": 0.0,
+  "lgbm_chemeleon": 0.0,
+  "lgbm_docking": 0.10166374857123171,
+  "lgbm_optimal": 0.0,
+  "tabicl": 0.09454342429166472,
+  "tabicl_3d": 0.0,
+  "tabicl_chemprop": 0.0,
+  "tabpfn": 0.22382114486761606,
+  "unimol2": 0.18813882592594586,
+  "unimol2_s2": 0.0,
+  "unimol2_s3": 0.21052155017354462,
+  "unimol2_s4": 0.11399266828222862,
+  "unimol2_s5": 0.0,
+  "unimol_lgbm": 0.0
+}

@@ -1,0 +1,116 @@
+[32m2026-05-16 17:10:18.523[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m452[0m - [1mDocking box: center=(-2.795, -0.789, 24.304), size=28.0³ Å³[0m
+[32m2026-05-16 17:10:18.523[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m460[0m - [1mUsing PDBQT receptor: data\docking\receptors\2qd9_protein.pdbqt[0m
+[32m2026-05-16 17:10:18.546[0m | [1mINFO    [0m | [36m__main__[0m:[36mdetect_docking_engine[0m:[36m206[0m - [1mUsing docking engine (conda env): C:\Users\Peter\miniconda3\envs\docking\Library\bin\smina.exe[0m
+[32m2026-05-16 17:10:18.580[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m500[0m - [1mCompounds to dock: 4135 train + 513 test = 4648 total[0m
+[32m2026-05-16 17:10:18.582[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m505[0m - [1mSaving docked poses to: data\docking\poses/[0m
+[32m2026-05-16 17:10:18.582[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m513[0m - [1m
+--- Docking 4135 training compounds ---[0m
+[32m2026-05-16 17:10:18.582[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 0/4135 (0 successful so far)...[0m
+[32m2026-05-16 17:16:00.745[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 50/4135 (50 successful so far)...[0m
+[32m2026-05-16 17:22:29.570[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 100/4135 (100 successful so far)...[0m
+[32m2026-05-16 17:28:28.043[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 150/4135 (150 successful so far)...[0m
+[32m2026-05-16 17:35:56.250[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 200/4135 (200 successful so far)...[0m
+[32m2026-05-16 17:42:35.772[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 250/4135 (250 successful so far)...[0m
+[32m2026-05-16 17:48:58.226[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 300/4135 (300 successful so far)...[0m
+[32m2026-05-16 17:54:47.238[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 350/4135 (350 successful so far)...[0m
+[32m2026-05-16 18:00:51.641[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 400/4135 (400 successful so far)...[0m
+[32m2026-05-16 18:07:09.969[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 450/4135 (450 successful so far)...[0m
+[32m2026-05-16 18:13:25.837[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 500/4135 (500 successful so far)...[0m
+[32m2026-05-16 18:19:36.369[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 550/4135 (550 successful so far)...[0m
+[32m2026-05-16 18:25:57.931[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 600/4135 (600 successful so far)...[0m
+[32m2026-05-16 18:31:40.142[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 650/4135 (650 successful so far)...[0m
+[32m2026-05-16 18:38:12.455[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 700/4135 (700 successful so far)...[0m
+[32m2026-05-16 18:43:52.280[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 750/4135 (750 successful so far)...[0m
+[32m2026-05-16 18:51:27.455[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 800/4135 (800 successful so far)...[0m
+[32m2026-05-16 18:57:09.279[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 850/4135 (850 successful so far)...[0m
+[32m2026-05-16 19:02:55.798[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 900/4135 (900 successful so far)...[0m
+[32m2026-05-16 19:09:12.416[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 950/4135 (950 successful so far)...[0m
+[32m2026-05-16 19:15:18.199[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1000/4135 (1000 successful so far)...[0m
+[32m2026-05-16 19:22:04.783[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1050/4135 (1049 successful so far)...[0m
+[32m2026-05-16 19:28:23.496[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1100/4135 (1099 successful so far)...[0m
+[32m2026-05-16 19:35:52.236[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1150/4135 (1149 successful so far)...[0m
+[32m2026-05-16 19:41:57.778[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1200/4135 (1199 successful so far)...[0m
+[32m2026-05-16 19:47:49.312[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1250/4135 (1249 successful so far)...[0m
+[32m2026-05-16 19:53:45.523[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1300/4135 (1299 successful so far)...[0m
+[32m2026-05-16 19:59:52.575[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1350/4135 (1349 successful so far)...[0m
+[32m2026-05-16 20:05:27.082[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1400/4135 (1399 successful so far)...[0m
+[32m2026-05-16 20:11:55.743[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1450/4135 (1449 successful so far)...[0m
+[32m2026-05-16 20:19:50.509[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1500/4135 (1499 successful so far)...[0m
+[32m2026-05-16 20:25:42.780[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1550/4135 (1549 successful so far)...[0m
+[32m2026-05-16 20:31:42.411[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1600/4135 (1599 successful so far)...[0m
+[32m2026-05-16 20:37:46.254[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1650/4135 (1649 successful so far)...[0m
+[32m2026-05-16 20:43:29.957[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1700/4135 (1699 successful so far)...[0m
+[32m2026-05-16 20:49:44.919[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1750/4135 (1749 successful so far)...[0m
+[32m2026-05-16 20:57:26.437[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1800/4135 (1799 successful so far)...[0m
+[32m2026-05-16 21:04:14.872[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1850/4135 (1849 successful so far)...[0m
+[32m2026-05-16 21:10:17.865[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1900/4135 (1899 successful so far)...[0m
+[32m2026-05-16 21:15:51.600[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 1950/4135 (1949 successful so far)...[0m
+[32m2026-05-16 21:22:18.739[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2000/4135 (1999 successful so far)...[0m
+[32m2026-05-16 21:29:27.908[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2050/4135 (2049 successful so far)...[0m
+[32m2026-05-16 21:35:26.829[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2100/4135 (2099 successful so far)...[0m
+[32m2026-05-16 21:41:56.366[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2150/4135 (2149 successful so far)...[0m
+[32m2026-05-16 21:47:31.264[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2200/4135 (2199 successful so far)...[0m
+[32m2026-05-16 21:54:02.350[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2250/4135 (2249 successful so far)...[0m
+[32m2026-05-16 22:00:02.909[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2300/4135 (2299 successful so far)...[0m
+[32m2026-05-16 22:06:09.609[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2350/4135 (2349 successful so far)...[0m
+[32m2026-05-16 22:11:59.597[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2400/4135 (2399 successful so far)...[0m
+[32m2026-05-16 22:19:41.220[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2450/4135 (2449 successful so far)...[0m
+[32m2026-05-16 22:25:46.061[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2500/4135 (2499 successful so far)...[0m
+[32m2026-05-16 22:32:02.555[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2550/4135 (2549 successful so far)...[0m
+[32m2026-05-16 22:38:22.552[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2600/4135 (2599 successful so far)...[0m
+[32m2026-05-16 22:45:15.109[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2650/4135 (2649 successful so far)...[0m
+[32m2026-05-16 22:50:56.054[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2700/4135 (2699 successful so far)...[0m
+[32m2026-05-16 22:57:21.199[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2750/4135 (2749 successful so far)...[0m
+[32m2026-05-16 23:02:58.613[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2800/4135 (2799 successful so far)...[0m
+[32m2026-05-16 23:09:29.607[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2850/4135 (2849 successful so far)...[0m
+[32m2026-05-16 23:15:39.501[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2900/4135 (2899 successful so far)...[0m
+[32m2026-05-16 23:21:21.847[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 2950/4135 (2949 successful so far)...[0m
+[32m2026-05-16 23:27:08.778[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3000/4135 (2999 successful so far)...[0m
+[32m2026-05-16 23:33:17.926[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3050/4135 (3049 successful so far)...[0m
+[32m2026-05-16 23:39:22.901[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3100/4135 (3099 successful so far)...[0m
+[32m2026-05-16 23:45:26.351[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3150/4135 (3149 successful so far)...[0m
+[32m2026-05-16 23:51:24.325[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3200/4135 (3199 successful so far)...[0m
+[32m2026-05-16 23:58:12.698[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3250/4135 (3249 successful so far)...[0m
+[32m2026-05-17 00:04:21.044[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3300/4135 (3299 successful so far)...[0m
+[32m2026-05-17 00:10:00.789[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3350/4135 (3349 successful so far)...[0m
+[32m2026-05-17 00:16:09.054[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3400/4135 (3399 successful so far)...[0m
+[32m2026-05-17 00:22:34.228[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3450/4135 (3449 successful so far)...[0m
+[32m2026-05-17 00:28:39.448[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3500/4135 (3499 successful so far)...[0m
+[32m2026-05-17 00:35:08.742[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3550/4135 (3549 successful so far)...[0m
+[32m2026-05-17 00:40:31.460[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3600/4135 (3599 successful so far)...[0m
+[32m2026-05-17 00:46:17.962[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3650/4135 (3649 successful so far)...[0m
+[32m2026-05-17 00:52:00.745[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3700/4135 (3699 successful so far)...[0m
+[32m2026-05-17 00:58:19.794[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3750/4135 (3749 successful so far)...[0m
+[32m2026-05-17 01:05:21.870[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3800/4135 (3799 successful so far)...[0m
+[32m2026-05-17 01:11:17.027[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3850/4135 (3849 successful so far)...[0m
+[32m2026-05-17 01:17:31.295[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3900/4135 (3899 successful so far)...[0m
+[32m2026-05-17 01:24:05.429[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 3950/4135 (3949 successful so far)...[0m
+[32m2026-05-17 01:31:40.219[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 4000/4135 (3999 successful so far)...[0m
+[32m2026-05-17 01:37:18.563[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 4050/4135 (4049 successful so far)...[0m
+[32m2026-05-17 01:43:31.677[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 4100/4135 (4099 successful so far)...[0m
+[32m2026-05-17 01:47:44.668[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m436[0m - [1mDocking complete: 4134/4135 successful (100.0%)[0m
+[32m2026-05-17 01:47:44.999[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m516[0m - [1mTraining scores saved: data\docking\train_docking_scores.parquet[0m
+[32m2026-05-17 01:47:44.999[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m524[0m - [1m
+--- Docking 513 test compounds ---[0m
+[32m2026-05-17 01:47:44.999[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 0/513 (0 successful so far)...[0m
+[32m2026-05-17 01:53:26.228[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 50/513 (50 successful so far)...[0m
+[32m2026-05-17 01:59:05.057[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 100/513 (100 successful so far)...[0m
+[32m2026-05-17 02:05:27.175[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 150/513 (150 successful so far)...[0m
+[32m2026-05-17 02:10:52.464[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 200/513 (200 successful so far)...[0m
+[32m2026-05-17 02:16:39.192[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 250/513 (250 successful so far)...[0m
+[32m2026-05-17 02:22:07.050[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 300/513 (300 successful so far)...[0m
+[32m2026-05-17 02:28:02.164[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 350/513 (350 successful so far)...[0m
+[32m2026-05-17 02:33:47.310[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 400/513 (400 successful so far)...[0m
+[32m2026-05-17 02:39:33.458[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 450/513 (450 successful so far)...[0m
+[32m2026-05-17 02:45:44.906[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m425[0m - [1mDocking 500/513 (500 successful so far)...[0m
+[32m2026-05-17 02:47:21.274[0m | [1mINFO    [0m | [36m__main__[0m:[36mdock_batch[0m:[36m436[0m - [1mDocking complete: 513/513 successful (100.0%)[0m
+[32m2026-05-17 02:47:21.277[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m527[0m - [1mTest scores saved: data\docking\test_docking_scores.parquet[0m
+[32m2026-05-17 02:47:21.277[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m532[0m - [1mTrain: 4134/4135 docked | vina_score_1 mean=-7.78 ± 0.98 kcal/mol[0m
+[32m2026-05-17 02:47:21.277[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m532[0m - [1mTest: 513/513 docked | vina_score_1 mean=-7.74 ± 0.72 kcal/mol[0m
+[32m2026-05-17 02:47:21.287[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m548[0m - [1m
+Sanity check — Pearson r(vina_score_1, pEC50): -0.358
+  Expected range: -0.4 to +0.1 (negative = more negative score \u2192 more potent)
+  If |r| < 0.10: docking may have failed silently — check receptor and box.
+  Note: r > 0 is possible if the box catches many inactive compounds binding weakly.[0m
+[32m2026-05-17 02:47:21.287[0m | [1mINFO    [0m | [36m__main__[0m:[36mmain[0m:[36m555[0m - [1m
+Next: python scripts/22_extract_docking_features.py[0m
